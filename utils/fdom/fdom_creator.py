@@ -4,11 +4,18 @@ Integrates all modules into a single cohesive exploration service
 """
 import json
 import argparse
+import sys
 from pathlib import Path
 from typing import Dict, Optional
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
+
+# ✅ ADD PATH RESOLUTION FOR MODULE IMPORTS
+# Always add project root to path so imports work whether run directly or imported
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Import all our modules
 from config_manager import ConfigManager
@@ -32,7 +39,8 @@ class FDOMCreator:
         
         # Pass config to ALL modules
         self.screen_manager = ScreenManager(self.config_manager)
-        self.app_controller = AppController(self.config_manager, self.screen_manager)
+        # AppController will be created when we have the executable path
+        self.app_controller = None
         
         # App-specific modules (initialized when app is set)
         self.state_manager = None
@@ -40,14 +48,12 @@ class FDOMCreator:
         
         # Centralized state
         self.current_app_name = None
+        self.current_executable_path = None
         self.exploration_active = False
         
         # CENTRALIZED path management
         self.project_root = Path(__file__).parent.parent.parent
         self.apps_base_dir = self.project_root / "apps"  # ROOT LEVEL
-        
-        # All modules use THESE paths, not their own
-        self.app_controller.apps_base_dir = self.apps_base_dir  # Override
         
     def create_fdom_for_app(self, executable_path: str) -> Dict:
         """Complete fDOM creation workflow with smart detection"""
@@ -115,11 +121,24 @@ class FDOMCreator:
         """Launch application and take initial screenshot"""
         self.console.print(f"\n[bold yellow]🚀 STEP 2: LAUNCHING APPLICATION[/bold yellow]")
         
+        # Create AppController with the executable path
+        # Pass config_manager (not config dict) since AppController needs get_app_storage_config() method
+        target_screen = self.config.get("capture.default_screen", 1)
+        self.app_controller = AppController(
+            app_path=executable_path,
+            target_screen=screen_id,
+            config=self.config_manager,  # Pass ConfigManager instance (has get_app_storage_config method)
+            template_file_path=None  # Will be handled by AppController if needed
+        )
+        self.app_controller.screen_manager = self.screen_manager
+        self.app_controller.apps_base_dir = self.apps_base_dir  # Override
+        
         # Launch with app_controller
-        launch_result = self.app_controller.launch_app_for_exploration(executable_path, screen_id)
+        launch_result = self.app_controller.launch_app()
         
         if launch_result["success"]:
             self.current_app_name = launch_result["app_info"]["app_name"]
+            self.current_executable_path = executable_path  # Store for ElementInteractor
             
             # Take initial screenshot using app_controller's method (app-only)
             screenshot_path = self.app_controller.take_initial_screenshot()
@@ -160,8 +179,9 @@ class FDOMCreator:
             self.console.print("[cyan]🆕 Fresh session - no existing fDOM found[/cyan]")
         
         # Initialize ElementInteractor with loaded StateManager
+        # Pass executable path (ElementInteractor expects this, not app_name)
         self.element_interactor = ElementInteractor(
-            app_name=self.current_app_name,
+            app_executable_path=self.current_executable_path,
             state_manager=self.state_manager,
             app_controller=self.app_controller
         )

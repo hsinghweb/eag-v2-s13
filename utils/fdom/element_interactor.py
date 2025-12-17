@@ -10,10 +10,10 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime
 
-# ✅ ADD PATH RESOLUTION FOR DIRECT SCRIPT EXECUTION
-if __name__ == "__main__":
-    # Add the project root to Python path when running directly
-    project_root = Path(__file__).parent.parent.parent
+# ✅ ADD PATH RESOLUTION FOR MODULE IMPORTS
+# Always add project root to path so imports work whether run directly or imported
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from rich.console import Console
