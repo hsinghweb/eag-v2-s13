@@ -12,6 +12,10 @@ def integrate_gemini_results(seraphine_analysis, gemini_results):
         debug_print("⚠️  No Gemini results to integrate")
         return seraphine_analysis
     
+    # ✅ ALWAYS PRINT - Show integration start
+    print("\n🤖 [GEMINI] ===== INTEGRATING GEMINI RESULTS =====")
+    print("🤖 [GEMINI] Mapping Gemini icon names to seraphine groups...")
+    
     debug_print("\n🔗 Integrating Gemini results into seraphine structure...")
     
     # Create mapping from ALL Gemini results across all images
@@ -29,7 +33,11 @@ def integrate_gemini_results(seraphine_analysis, gemini_results):
                         'interactive': icon.get('interactive', True),
                         'type': icon.get('type', 'icon')  # New field
                     }
+                    # Show first few mappings
+                    if len(id_to_gemini) <= 5:
+                        print(f"🤖 [GEMINI]   Mapping: {icon_id} → '{icon.get('name', 'unknown')}'")
     
+    print(f"🤖 [GEMINI] ✅ Created {len(id_to_gemini)} icon name mappings from Gemini")
     debug_print(f"   📋 Found {len(id_to_gemini)} Gemini mappings to integrate")
     
     # Integrate results into seraphine bbox_processor
@@ -58,7 +66,13 @@ def integrate_gemini_results(seraphine_analysis, gemini_results):
                 bbox.g_icon_name = 'unanalyzed'
                 bbox.g_brief = 'Not analyzed by Gemini'
     
-    debug_print(f"✅ Integrated Gemini results: {total_integrated}/{sum(len(boxes) for boxes in bbox_processor.final_groups.values())} items updated")
+    total_elements = sum(len(boxes) for boxes in bbox_processor.final_groups.values())
+    print(f"🤖 [GEMINI] ✅ Integrated: {total_integrated}/{total_elements} elements updated with Gemini names")
+    if total_integrated < total_elements:
+        print(f"🤖 [GEMINI] ⚠️  {total_elements - total_integrated} elements did NOT get Gemini names (will show 'unanalyzed')")
+        print(f"🤖 [GEMINI]    This may indicate ID mismatch between Gemini results and seraphine groups")
+    
+    debug_print(f"✅ Integrated Gemini results: {total_integrated}/{total_elements} items updated")
     
     # 🎯 NEW: REGENERATE SERAPHINE_GEMINI_GROUPS WITH UPDATED DATA
     from .pipeline_exporter import create_enhanced_seraphine_structure
@@ -75,6 +89,9 @@ def integrate_gemini_results(seraphine_analysis, gemini_results):
     # Add it to the analysis
     seraphine_analysis['seraphine_gemini_groups'] = seraphine_gemini_groups
     
+    print(f"🤖 [GEMINI] 🎯 Generated seraphine_gemini_groups with {len(seraphine_gemini_groups)} groups")
+    print("🤖 [GEMINI] ===== INTEGRATION COMPLETE =====\n")
+    
     debug_print(f"🎯 Generated seraphine_gemini_groups with {len(seraphine_gemini_groups)} groups")
     
     return seraphine_analysis
@@ -83,9 +100,30 @@ async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_pat
     """
     Run Gemini LLM analysis with optimized image sharing
     """
+    # ✅ ALWAYS PRINT - Not just in debug mode
+    print("\n" + "="*80)
+    print("🤖 [GEMINI] ===== GEMINI LLM ANALYSIS STARTING =====")
+    print("="*80)
+    
     if not config.get("gemini_enabled", False):
+        print("🤖 [GEMINI] ❌ Gemini analysis is DISABLED in config.json")
+        print("🤖 [GEMINI]    Set 'gemini_enabled': true in utils/seraphine_pipeline/config.json")
         debug_print("\n⏭️  Gemini analysis disabled in config")
         return None
+    
+    print("🤖 [GEMINI] ✅ Gemini analysis is ENABLED")
+    print(f"🤖 [GEMINI] 📸 Analyzing screenshot: {image_path}")
+    
+    # Check for API key
+    import os
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("🤖 [GEMINI] ❌ ERROR: GEMINI_API_KEY environment variable is NOT set!")
+        print("🤖 [GEMINI]    Set it with: $env:GEMINI_API_KEY = 'your-key' (PowerShell)")
+        print("🤖 [GEMINI]    Or create .env file with: GEMINI_API_KEY=your-key")
+        return None
+    else:
+        print(f"🤖 [GEMINI] ✅ GEMINI_API_KEY found (length: {len(api_key)} chars)")
     
     debug_print("\n🤖 Step 4: Gemini LLM Analysis (Optimized Image Sharing)")
     debug_print("=" * 70)
@@ -126,11 +164,20 @@ async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_pat
             )
             
             # Extract direct images from result
-            direct_images = result['direct_images']
+            direct_images = result.get('direct_images', [])
             
+            if not direct_images or len(direct_images) == 0:
+                print(f"🤖 [GEMINI] ❌ ERROR: No images generated for Gemini analysis!")
+                print(f"🤖 [GEMINI]    This means no groups were available to analyze")
+                print(f"🤖 [GEMINI]    Check why all groups have explore=False")
+                return None
+            
+            print(f"🤖 [GEMINI] 🖼️  Generated {len(direct_images)} grouped images for analysis")
+            print(f"🤖 [GEMINI] 📋 Each image contains UI elements with labeled IDs (H1_1, H2_3, etc.)")
             debug_print(f"   🖼️  Generated {len(direct_images)} direct images for Gemini analysis")
             
             # Analyze with direct images (no file I/O)
+            print(f"🤖 [GEMINI] 🚀 Starting Gemini API calls for {len(direct_images)} images...")
             gemini_results = await analyzer.analyze_grouped_images(
                 grouped_image_paths=None,
                 filename_base=filename_base,
@@ -145,6 +192,14 @@ async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_pat
                 direct_images=None
             )
         
+        # ✅ ALWAYS PRINT - Show summary
+        print("\n" + "="*80)
+        print("🤖 [GEMINI] ===== GEMINI ANALYSIS COMPLETE =====")
+        print(f"🤖 [GEMINI] ✅ Successfully analyzed: {gemini_results['successful_analyses']}/{gemini_results['total_images_analyzed']} images")
+        print(f"🤖 [GEMINI] 🎯 Total icons/buttons identified: {gemini_results['total_icons_found']}")
+        print(f"🤖 [GEMINI] ⏱️  Total analysis time: {gemini_results['analysis_duration_seconds']:.2f}s")
+        print("="*80 + "\n")
+        
         debug_print(f"✅ Gemini analysis complete:")
         debug_print(f"   🖼️  Analyzed: {gemini_results['successful_analyses']}/{gemini_results['total_images_analyzed']} images")
         debug_print(f"   🎯 Total icons found: {gemini_results['total_icons_found']}")
@@ -153,8 +208,14 @@ async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_pat
         return gemini_results
         
     except ImportError:
+        print("🤖 [GEMINI] ❌ ERROR: Gemini analyzer not available (missing dependencies)")
+        print("🤖 [GEMINI]    Install with: pip install google-genai")
         debug_print("❌ Gemini analyzer not available (missing dependencies)")
         return None
     except Exception as e:
+        print(f"🤖 [GEMINI] ❌ ERROR: Gemini analysis failed: {str(e)}")
+        import traceback
+        print(f"🤖 [GEMINI] Full error traceback:")
+        traceback.print_exc()
         debug_print(f"❌ Gemini analysis failed: {str(e)}")
         return None

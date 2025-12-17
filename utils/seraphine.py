@@ -249,6 +249,15 @@ def run_seraphine_grouping(merged_detections, config, image_path=None):
                     enhanced_analysis = integrate_supergroup_analysis(enhanced_analysis, supergroup_analysis_text)
                     print(f"[SERAPHINE] ✅ Supergroup analysis integrated into group_details")
                     
+                    # Count how many groups got explore=True
+                    group_details = enhanced_analysis.get('analysis', {}).get('group_details', {})
+                    explore_true_count = sum(1 for gid, ginfo in group_details.items() if ginfo.get('explore', False))
+                    total_groups = len(group_details)
+                    print(f"[SERAPHINE] 📊 Explore flags: {explore_true_count}/{total_groups} groups have explore=True")
+                    if explore_true_count == 0:
+                        print(f"[SERAPHINE] ⚠️  WARNING: No groups have explore=True after supergroup analysis!")
+                        print(f"[SERAPHINE]    This means Gemini icon analysis may use fallback (all groups)")
+                    
                     # ✅ CHECK FOR SPLASH SCREEN AND HANDLE IT  
                     splash_result = handle_splash_screen_if_needed(enhanced_analysis, image_path, "fdom.json")
                     if splash_result['restart_required']:
@@ -259,6 +268,8 @@ def run_seraphine_grouping(merged_detections, config, image_path=None):
                     
                 else:
                     print(f"[SERAPHINE] ⚠️  No supergroup analysis received")
+                    print(f"[SERAPHINE]    This means explore flags won't be set, and all groups will default to explore=False")
+                    print(f"[SERAPHINE]    Gemini analysis will use fallback mode (analyze all groups)")
                     
             except Exception as e:
                 print(f"[SERAPHINE ERROR] Supergroup analysis failed: {e}")
@@ -569,18 +580,29 @@ async def main(image_path=None):
             # Step 4: Gemini Analysis
             gemini_results = None
             if config.get("gemini_enabled", False):
+                print("\n🤖 [GEMINI] Gemini is ENABLED in config - proceeding with analysis...")
                 try:
                     gemini_results = await run_gemini_analysis(
                         seraphine_analysis, grouped_image_paths, image_path, config
                     )
                     
                     if gemini_results:
+                        print("🤖 [GEMINI] ✅ Gemini results received, integrating into seraphine structure...")
                         # Store original merged detections for proper ID lookup
                         seraphine_analysis['original_merged_detections'] = detection_results['merged_detections']
                         seraphine_analysis = integrate_gemini_results(seraphine_analysis, gemini_results)
+                    else:
+                        print("🤖 [GEMINI] ⚠️  Gemini analysis returned no results!")
                         
                 except Exception as e:
+                    print(f"🤖 [GEMINI] ❌ ERROR: Gemini analysis failed with exception: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
                     debug_print(f"⚠️  Gemini analysis failed: {str(e)}")
+            else:
+                print("\n🤖 [GEMINI] ⚠️  Gemini is DISABLED in config.json")
+                print("🤖 [GEMINI]    Set 'gemini_enabled': true to enable Gemini analysis")
+                print("🤖 [GEMINI]    Without Gemini, elements will have 'Unknown' or 'unanalyzed' names")
             
             # Calculate total time BEFORE mode check
             total_time = time.time() - pipeline_start

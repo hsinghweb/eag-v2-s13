@@ -70,9 +70,18 @@ class GeminiIconAnalyzer:
         try:
             with open(self.prompt_path, "r", encoding="utf-8") as f:
                 prompt_content = f.read().strip()
+            print(f"🤖 [GEMINI] ✅ Loaded prompt from: {self.prompt_path}")
+            print(f"🤖 [GEMINI]    Prompt length: {len(prompt_content)} characters")
+            print(f"🤖 [GEMINI]    Full prompt content:")
+            print("🤖 [GEMINI] " + "="*80)
+            # Show full prompt (it's important to see what we're sending)
+            for line in prompt_content.split('\n'):
+                print(f"🤖 [GEMINI] {line}")
+            print("🤖 [GEMINI] " + "="*80)
             debug_print(f"✅ Loaded prompt ({len(prompt_content)} characters)")
             return prompt_content
         except FileNotFoundError:
+            print(f"🤖 [GEMINI] ❌ ERROR: Prompt file not found: {self.prompt_path}")
             raise FileNotFoundError(f"Prompt file not found: {self.prompt_path}")
     
     async def analyze_grouped_images(self, grouped_image_paths: List[str] = None, 
@@ -90,19 +99,44 @@ class GeminiIconAnalyzer:
             Dictionary containing analysis results
         """
         if direct_images:
-            debug_print(f"\n🤖 Starting Gemini analysis of {len(direct_images)} grouped images (direct mode)...")
+            print(f"🤖 [GEMINI] Starting Gemini analysis of {len(direct_images)} grouped images (direct mode)...")
             valid_images = [(img, name) for img, name in direct_images if "combined" in name]
-        else:
+            debug_print(f"\n🤖 Starting Gemini analysis of {len(direct_images)} grouped images (direct mode)...")
+        elif grouped_image_paths:
+            print(f"🤖 [GEMINI] Starting Gemini analysis of {len(grouped_image_paths)} grouped images (file mode)...")
             debug_print(f"\n🤖 Starting Gemini analysis of {len(grouped_image_paths)} grouped images (file mode)...")
             valid_image_paths = [
                 image_path for image_path in sorted(grouped_image_paths) 
                 if "combined" in os.path.basename(image_path)
             ]
             valid_images = [(path, os.path.basename(path)) for path in valid_image_paths]
+        else:
+            print("🤖 [GEMINI] ❌ ERROR: No images provided (both direct_images and grouped_image_paths are None/empty)")
+            print("🤖 [GEMINI]    This usually means all groups have explore=False, so no images were generated")
+            print("🤖 [GEMINI]    Check seraphine_preprocessor.py to see why explore flags are False")
+            return {
+                'images': [], 
+                'total_icons_found': 0, 
+                'analysis_duration_seconds': 0,
+                'total_images_analyzed': 0,
+                'successful_analyses': 0,
+                'analysis_success': False,
+                'error': 'No images to analyze - all groups have explore=False'
+            }
         
         if not valid_images:
+            print("🤖 [GEMINI] ❌ No valid combined images found for analysis")
+            print("🤖 [GEMINI]    Images must contain 'combined' in filename")
             debug_print("❌ No valid combined images found for analysis")
-            return {'images': [], 'total_icons': 0, 'analysis_time': 0}
+            return {
+                'images': [], 
+                'total_icons_found': 0, 
+                'analysis_duration_seconds': 0,
+                'total_images_analyzed': 0,
+                'successful_analyses': 0,
+                'analysis_success': False,
+                'error': 'No valid combined images found'
+            }
         
         # Start timing
         start_time = datetime.now()
@@ -124,6 +158,13 @@ class GeminiIconAnalyzer:
                     
                     if response:
                         icons = self._parse_gemini_response(response)
+                        
+                        # ✅ DEBUG: Show parsed icons
+                        print(f"🤖 [GEMINI] Parsed {len(icons)} icons from response:")
+                        for i, icon in enumerate(icons[:5]):  # Show first 5
+                            print(f"🤖 [GEMINI]   Icon {i+1}: ID={icon.get('id')}, Name='{icon.get('name')}', Usage='{icon.get('usage', '')[:50]}...'")
+                        if len(icons) > 5:
+                            print(f"🤖 [GEMINI]   ... and {len(icons) - 5} more icons")
                         
                         image_result = {
                             'image_path': filename if isinstance(image_data, str) else f"direct:{filename}",
@@ -202,7 +243,7 @@ class GeminiIconAnalyzer:
             'analysis_timestamp': end_time.isoformat(),
             'analysis_duration_seconds': analysis_duration,
             'total_images_analyzed': len(valid_images),
-            'total_input_images': len(direct_images) if direct_images else len(grouped_image_paths),
+            'total_input_images': len(direct_images) if direct_images else (len(grouped_image_paths) if grouped_image_paths else 0),
             'analysis_mode': 'direct' if direct_images else 'file',
             'successful_analyses': len([r for r in image_results if r['analysis_success']]),
             'total_icons_found': total_icons_found,
@@ -219,30 +260,103 @@ class GeminiIconAnalyzer:
         debug_print(f"🎉 Gemini analysis completed in {analysis_duration:.2f}s")
         return results
     
-    async def _analyze_single_image_direct(self, image_data, filename: str) -> Optional[str]:
-        """Analyze a single image with Gemini - supports both PIL images and file paths"""
-        try:
-            if isinstance(image_data, str):
-                # Traditional file path method
-                image = Image.open(image_data)
-            else:
-                # Direct PIL image method (optimization!)
-                image = image_data
-            
-            # Call Gemini API
-            response = await self.client.aio.models.generate_content(
-                model="gemini-2.0-flash-exp",
-                contents=[self.prompt, image],
-            )
-            
-            return response.text
-            
-        except ServerError as e:
-            debug_print(f"    ⚠️  Server error: {e}")
-            return None
-        except Exception as e:
-            debug_print(f"    ❌ Analysis error: {e}")
-            return None
+    async def _analyze_single_image_direct(self, image_data, filename: str, max_retries: int = 3) -> Optional[str]:
+        """Analyze a single image with Gemini - supports both PIL images and file paths with retry logic for 429 errors"""
+        import time
+        
+        if isinstance(image_data, str):
+            # Traditional file path method
+            image = Image.open(image_data)
+        else:
+            # Direct PIL image method (optimization!)
+            image = image_data
+        
+        # ✅ DEBUG: Show that we're calling Gemini
+        print(f"\n🤖 [GEMINI] Calling Gemini API for image: {filename}")
+        print(f"🤖 [GEMINI] Model: gemini-2.0-flash-exp")
+        print(f"🤖 [GEMINI] Image size: {image.size if hasattr(image, 'size') else 'N/A'}")
+        
+        # ✅ DEBUG: Show the prompt being sent (first 500 chars)
+        prompt_preview = self.prompt[:500] + "..." if len(self.prompt) > 500 else self.prompt
+        print(f"🤖 [GEMINI] Prompt preview (first 500 chars):")
+        print(f"🤖 [GEMINI] {prompt_preview}")
+        print(f"🤖 [GEMINI] Full prompt length: {len(self.prompt)} characters")
+        
+        # Retry logic for rate limiting (429 errors)
+        for attempt in range(max_retries):
+            try:
+                # Call Gemini API
+                if attempt > 0:
+                    wait_time = 2 ** attempt  # Exponential backoff: 2s, 4s, 8s
+                    print(f"🤖 [GEMINI] ⏳ Retry attempt {attempt + 1}/{max_retries} after {wait_time}s wait...")
+                    await asyncio.sleep(wait_time)
+                else:
+                    print(f"🤖 [GEMINI] Sending request to Gemini API...")
+                
+                response = await self.client.aio.models.generate_content(
+                    model="gemini-2.0-flash-exp",
+                    contents=[self.prompt, image],
+                )
+                
+                response_text = response.text
+                print(f"🤖 [GEMINI] ✅ Received response from Gemini!")
+                print(f"🤖 [GEMINI] Response length: {len(response_text)} characters")
+                
+                # ✅ DEBUG: Show response preview (first 1000 chars)
+                response_preview = response_text[:1000] + "..." if len(response_text) > 1000 else response_text
+                print(f"🤖 [GEMINI] Response preview (first 1000 chars):")
+                print(f"🤖 [GEMINI] {response_preview}")
+                print(f"🤖 [GEMINI] {'='*80}\n")
+                
+                return response_text
+                
+            except ServerError as e:
+                error_str = str(e)
+                # Check if it's a 429 rate limit error
+                if "429" in error_str or "rate limit" in error_str.lower() or "quota" in error_str.lower():
+                    if attempt < max_retries - 1:
+                        wait_time = 2 ** (attempt + 1)  # Exponential backoff
+                        print(f"🤖 [GEMINI] ⚠️  Rate limit error (429) - will retry in {wait_time}s...")
+                        print(f"🤖 [GEMINI]    Error: {error_str}")
+                        await asyncio.sleep(wait_time)
+                        continue
+                    else:
+                        print(f"🤖 [GEMINI] ❌ Rate limit error (429) - max retries ({max_retries}) exceeded")
+                        print(f"🤖 [GEMINI]    Error: {error_str}")
+                        print(f"🤖 [GEMINI]    Please wait a few minutes and try again, or reduce gemini_max_concurrent in config")
+                        return None
+                else:
+                    # Other server errors - don't retry
+                    print(f"🤖 [GEMINI] ❌ Server error from Gemini API: {e}")
+                    debug_print(f"    ⚠️  Server error: {e}")
+                    return None
+                    
+            except Exception as e:
+                error_str = str(e)
+                # Check if it's a 429 rate limit error in exception message
+                if "429" in error_str or "rate limit" in error_str.lower() or "quota" in error_str.lower():
+                    if attempt < max_retries - 1:
+                        wait_time = 2 ** (attempt + 1)
+                        print(f"🤖 [GEMINI] ⚠️  Rate limit error (429) - will retry in {wait_time}s...")
+                        print(f"🤖 [GEMINI]    Error: {error_str}")
+                        await asyncio.sleep(wait_time)
+                        continue
+                    else:
+                        print(f"🤖 [GEMINI] ❌ Rate limit error (429) - max retries ({max_retries}) exceeded")
+                        print(f"🤖 [GEMINI]    Error: {error_str}")
+                        return None
+                else:
+                    # Other errors - don't retry
+                    print(f"🤖 [GEMINI] ❌ Analysis error: {e}")
+                    import traceback
+                    print(f"🤖 [GEMINI] Full error traceback:")
+                    traceback.print_exc()
+                    debug_print(f"    ❌ Analysis error: {e}")
+                    return None
+        
+        # If we get here, all retries failed
+        print(f"🤖 [GEMINI] ❌ All {max_retries} retry attempts failed")
+        return None
     
     def _parse_gemini_response(self, response_text: str) -> List[Dict[str, str]]:
         """Parse Gemini response into structured icon data"""
