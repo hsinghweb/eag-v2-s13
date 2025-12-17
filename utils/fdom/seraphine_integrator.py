@@ -49,6 +49,8 @@ class SeraphineIntegrator:
         
         # Call Seraphine
         self.console.print(f"[cyan]🔍 Analyzing screenshot: {screenshot_path}[/cyan]")
+        self.console.print(f"[yellow]📋 Note: Gemini analysis should be enabled in utils/seraphine_pipeline/config.json[/yellow]")
+        
         seraphine_result = process_image_sync(screenshot_path)  # ✅ FIXED: Use imported function directly
         
         if not seraphine_result:
@@ -60,12 +62,21 @@ class SeraphineIntegrator:
         
         # ✅ FIXED: Extract the correct groups structure - prefer seraphine_gemini_groups if key exists
         # Check if seraphine_gemini_groups key exists (even if empty), otherwise fall back to seraphine_groups
-        if 'seraphine_gemini_groups' in seraphine_result:
+        has_gemini = 'seraphine_gemini_groups' in seraphine_result
+        has_fallback = 'seraphine_groups' in seraphine_result
+        
+        if has_gemini:
             seraphine_groups = seraphine_result['seraphine_gemini_groups']
-            self.console.print(f"[cyan]🔍 Using seraphine_gemini_groups (exists: {bool(seraphine_groups)})[/cyan]")
-        elif 'seraphine_groups' in seraphine_result:
+            self.console.print(f"[green]✅ Using seraphine_gemini_groups (Gemini analysis was used)[/green]")
+            self.console.print(f"[green]   Groups found: {len(seraphine_groups) if isinstance(seraphine_groups, dict) else 'N/A'}[/green]")
+        elif has_fallback:
             seraphine_groups = seraphine_result['seraphine_groups']
-            self.console.print(f"[cyan]🔍 Using seraphine_groups (exists: {bool(seraphine_groups)})[/cyan]")
+            self.console.print(f"[yellow]⚠️ Using seraphine_groups (Gemini analysis NOT used - fallback mode)[/yellow]")
+            self.console.print(f"[yellow]   This means either:[/yellow]")
+            self.console.print(f"[yellow]   1. Gemini is disabled in utils/seraphine_pipeline/config.json[/yellow]")
+            self.console.print(f"[yellow]   2. GEMINI_API_KEY environment variable is not set[/yellow]")
+            self.console.print(f"[yellow]   3. Gemini analysis failed (check error messages above)[/yellow]")
+            self.console.print(f"[yellow]   Elements will have 'Unknown' or 'unanalyzed' names without Gemini[/yellow]")
         else:
             self.console.print("[red]❌ No seraphine groups found in result (neither seraphine_gemini_groups nor seraphine_groups keys exist)[/red]")
             return {}
@@ -106,6 +117,27 @@ class SeraphineIntegrator:
         
         if not fdom_nodes:
             return {}
+        
+        # ✅ DEBUG: Check if we have proper Gemini data (not "Unknown" or "unanalyzed")
+        unknown_count = sum(1 for node in fdom_nodes.values() 
+                          if node.get('g_icon_name', '').lower() in ['unknown', 'unanalyzed', ''])
+        if unknown_count > 0:
+            self.console.print(f"[yellow]⚠️ Warning: {unknown_count}/{len(fdom_nodes)} elements have 'Unknown' or 'unanalyzed' names[/yellow]")
+            if not has_gemini:
+                self.console.print(f"[yellow]   ⚠️ CRITICAL: Gemini analysis was NOT used! Elements will have default names.[/yellow]")
+                self.console.print(f"[yellow]   To fix:[/yellow]")
+                self.console.print(f"[yellow]   1. Set GEMINI_API_KEY environment variable[/yellow]")
+                self.console.print(f"[yellow]   2. Ensure 'gemini_enabled': true in utils/seraphine_pipeline/config.json[/yellow]")
+            else:
+                self.console.print(f"[yellow]   Even though seraphine_gemini_groups exists, some elements lack Gemini data[/yellow]")
+                self.console.print(f"[yellow]   This may indicate ID mismatch between Gemini results and seraphine groups[/yellow]")
+            # Show sample of unknown elements
+            unknown_samples = [node_id for node_id, node in list(fdom_nodes.items())[:10] 
+                              if node.get('g_icon_name', '').lower() in ['unknown', 'unanalyzed', '']]
+            if unknown_samples:
+                self.console.print(f"[yellow]   Sample unknown elements: {unknown_samples[:5]}[/yellow]")
+        else:
+            self.console.print(f"[green]✅ All {len(fdom_nodes)} elements have Gemini-generated names![/green]")
         
         # Save crops
         self._save_element_crops(screenshot_path, fdom_nodes, state_id, source_element_name)
