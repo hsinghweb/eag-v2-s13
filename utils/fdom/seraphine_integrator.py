@@ -58,12 +58,16 @@ class SeraphineIntegrator:
         # ✅ DEBUG: Show what Seraphine returned
         self.console.print(f"[cyan]🔍 DEBUG: seraphine_result keys: {list(seraphine_result.keys())}[/cyan]")
         
-        # ✅ FIXED: Extract the correct groups structure - check both possible keys
-        # seraphine_gemini_groups (when Gemini is enabled) or seraphine_groups (when Gemini is disabled)
-        seraphine_groups = seraphine_result.get('seraphine_gemini_groups') or seraphine_result.get('seraphine_groups', {})
-        
-        if not seraphine_groups:
-            self.console.print("[red]❌ No seraphine groups found in result (neither seraphine_gemini_groups nor seraphine_groups)[/red]")
+        # ✅ FIXED: Extract the correct groups structure - prefer seraphine_gemini_groups if key exists
+        # Check if seraphine_gemini_groups key exists (even if empty), otherwise fall back to seraphine_groups
+        if 'seraphine_gemini_groups' in seraphine_result:
+            seraphine_groups = seraphine_result['seraphine_gemini_groups']
+            self.console.print(f"[cyan]🔍 Using seraphine_gemini_groups (exists: {bool(seraphine_groups)})[/cyan]")
+        elif 'seraphine_groups' in seraphine_result:
+            seraphine_groups = seraphine_result['seraphine_groups']
+            self.console.print(f"[cyan]🔍 Using seraphine_groups (exists: {bool(seraphine_groups)})[/cyan]")
+        else:
+            self.console.print("[red]❌ No seraphine groups found in result (neither seraphine_gemini_groups nor seraphine_groups keys exist)[/red]")
             return {}
         
         # ✅ NEW: If seraphine_groups contains metadata, extract group_details
