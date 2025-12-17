@@ -4,7 +4,7 @@ Handles integration of Gemini LLM results into seraphine structure
 """
 from .helpers import debug_print
 
-def integrate_gemini_results(seraphine_analysis, gemini_results):
+def integrate_llm_results(seraphine_analysis, llm_results):
     """
     Integrate Gemini results into seraphine structure at individual bbox level
     """
@@ -13,20 +13,20 @@ def integrate_gemini_results(seraphine_analysis, gemini_results):
         return seraphine_analysis
     
     # ✅ ALWAYS PRINT - Show integration start
-    print("\n🤖 [GEMINI] ===== INTEGRATING GEMINI RESULTS =====")
-    print("🤖 [GEMINI] Mapping Gemini icon names to seraphine groups...")
+    print("\n🤖 [LLM] ===== INTEGRATING LLM RESULTS =====")
+    print("🤖 [LLM] Mapping LLM icon names to seraphine groups...")
     
-    debug_print("\n🔗 Integrating Gemini results into seraphine structure...")
+    debug_print("\n🔗 Integrating LLM results into seraphine structure...")
     
-    # Create mapping from ALL Gemini results across all images
-    id_to_gemini = {}
+    # Create mapping from ALL LLM results across all images
+    id_to_llm = {}
     
-    for image_result in gemini_results['images']:
+    for image_result in llm_results['images']:
         if image_result['analysis_success'] and image_result.get('icons'):
             for icon in image_result['icons']:
                 icon_id = icon.get('id')  # Like "H1_1", "H12_3", etc.
                 if icon_id:
-                    id_to_gemini[icon_id] = {
+                    id_to_llm[icon_id] = {
                         'icon_name': icon.get('name', 'unknown'),
                         'brief': icon.get('usage', 'No description'),
                         'enabled': icon.get('enabled', True),
@@ -34,11 +34,11 @@ def integrate_gemini_results(seraphine_analysis, gemini_results):
                         'type': icon.get('type', 'icon')  # New field
                     }
                     # Show first few mappings
-                    if len(id_to_gemini) <= 5:
-                        print(f"🤖 [GEMINI]   Mapping: {icon_id} → '{icon.get('name', 'unknown')}'")
+                    if len(id_to_llm) <= 5:
+                        print(f"🤖 [LLM]   Mapping: {icon_id} → '{icon.get('name', 'unknown')}'")
     
-    print(f"🤖 [GEMINI] ✅ Created {len(id_to_gemini)} icon name mappings from Gemini")
-    debug_print(f"   📋 Found {len(id_to_gemini)} Gemini mappings to integrate")
+    print(f"🤖 [LLM] ✅ Created {len(id_to_llm)} icon name mappings from LLM")
+    debug_print(f"   📋 Found {len(id_to_llm)} LLM mappings to integrate")
     
     # Integrate results into seraphine bbox_processor
     bbox_processor = seraphine_analysis['bbox_processor']
@@ -89,62 +89,101 @@ def integrate_gemini_results(seraphine_analysis, gemini_results):
     # Add it to the analysis
     seraphine_analysis['seraphine_gemini_groups'] = seraphine_gemini_groups
     
-    print(f"🤖 [GEMINI] 🎯 Generated seraphine_gemini_groups with {len(seraphine_gemini_groups)} groups")
-    print("🤖 [GEMINI] ===== INTEGRATION COMPLETE =====\n")
+    print(f"🤖 [LLM] 🎯 Generated seraphine_gemini_groups with {len(seraphine_gemini_groups)} groups")
+    print("🤖 [LLM] ===== INTEGRATION COMPLETE =====\n")
     
     debug_print(f"🎯 Generated seraphine_gemini_groups with {len(seraphine_gemini_groups)} groups")
     
     return seraphine_analysis
 
-async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_path, config):
+
+# Keep backward compatibility
+def integrate_gemini_results(seraphine_analysis, gemini_results):
+    """Backward compatibility wrapper - redirects to integrate_llm_results"""
+    return integrate_llm_results(seraphine_analysis, gemini_results)
+
+async def run_llm_analysis(seraphine_analysis, grouped_image_paths, image_path, config):
     """
-    Run Gemini LLM analysis with optimized image sharing
+    Run LLM analysis with optimized image sharing - supports both Gemini and Groq
     """
-    # ✅ ALWAYS PRINT - Not just in debug mode
-    print("\n" + "="*80)
-    print("🤖 [GEMINI] ===== GEMINI LLM ANALYSIS STARTING =====")
-    print("="*80)
+    # Determine which LLM to use
+    llm_provider = config.get("llm_provider", "groq").lower()  # Default to Groq
+    groq_enabled = config.get("groq_enabled", True)  # Default to enabled
+    gemini_enabled = config.get("gemini_enabled", False)
     
-    if not config.get("gemini_enabled", False):
-        print("🤖 [GEMINI] ❌ Gemini analysis is DISABLED in config.json")
-        print("🤖 [GEMINI]    Set 'gemini_enabled': true in utils/seraphine_pipeline/config.json")
-        debug_print("\n⏭️  Gemini analysis disabled in config")
+    # Auto-detect: if Groq is enabled, use it; otherwise try Gemini
+    if groq_enabled:
+        llm_provider = "groq"
+    elif gemini_enabled:
+        llm_provider = "gemini"
+    else:
+        print("❌ [LLM] No LLM provider enabled!")
+        print("   Set 'groq_enabled': true or 'gemini_enabled': true in config.json")
         return None
     
-    print("🤖 [GEMINI] ✅ Gemini analysis is ENABLED")
-    print(f"🤖 [GEMINI] 📸 Analyzing screenshot: {image_path}")
+    # ✅ ALWAYS PRINT - Not just in debug mode
+    print("\n" + "="*80)
+    if llm_provider == "groq":
+        print("🚀 [GROQ] ===== GROQ LLM ANALYSIS STARTING =====")
+    else:
+        print("🤖 [GEMINI] ===== GEMINI LLM ANALYSIS STARTING =====")
+    print("="*80)
+    
+    print(f"📸 Analyzing screenshot: {image_path}")
     
     # Check for API key
     import os
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        print("🤖 [GEMINI] ❌ ERROR: GEMINI_API_KEY environment variable is NOT set!")
-        print("🤖 [GEMINI]    Set it with: $env:GEMINI_API_KEY = 'your-key' (PowerShell)")
-        print("🤖 [GEMINI]    Or create .env file with: GEMINI_API_KEY=your-key")
-        return None
+    if llm_provider == "groq":
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            print("🚀 [GROQ] ❌ ERROR: GROQ_API_KEY environment variable is NOT set!")
+            print("🚀 [GROQ]    Set it with: $env:GROQ_API_KEY = 'your-key' (PowerShell)")
+            print("🚀 [GROQ]    Or create .env file with: GROQ_API_KEY=your-key")
+            return None
+        else:
+            print(f"🚀 [GROQ] ✅ GROQ_API_KEY found (length: {len(api_key)} chars)")
     else:
-        print(f"🤖 [GEMINI] ✅ GEMINI_API_KEY found (length: {len(api_key)} chars)")
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            print("🤖 [GEMINI] ❌ ERROR: GEMINI_API_KEY environment variable is NOT set!")
+            print("🤖 [GEMINI]    Set it with: $env:GEMINI_API_KEY = 'your-key' (PowerShell)")
+            print("🤖 [GEMINI]    Or create .env file with: GEMINI_API_KEY=your-key")
+            return None
+        else:
+            print(f"🤖 [GEMINI] ✅ GEMINI_API_KEY found (length: {len(api_key)} chars)")
     
-    debug_print("\n🤖 Step 4: Gemini LLM Analysis (Optimized Image Sharing)")
+    debug_print(f"\n{'🚀' if llm_provider == 'groq' else '🤖'} Step 4: {llm_provider.upper()} LLM Analysis (Optimized Image Sharing)")
     debug_print("=" * 70)
     
     try:
-        from .gemini_analyzer import GeminiIconAnalyzer
         import os
         
         output_dir = config.get("output_dir", "outputs")
         filename_base = os.path.splitext(os.path.basename(image_path))[0]
         
-        # Initialize analyzer - let it use default prompt path (relative to module)
-        analyzer = GeminiIconAnalyzer(
-            prompt_path=config.get("gemini_prompt_path"),  # Pass None to use default
-            output_dir=output_dir,
-            max_concurrent_requests=config.get("gemini_max_concurrent", 4),
-            save_results=config.get("save_gemini_json", True)
-        )
+        # Initialize analyzer based on provider
+        if llm_provider == "groq":
+            from .groq_analyzer import GroqIconAnalyzer
+            analyzer = GroqIconAnalyzer(
+                prompt_path=config.get("groq_prompt_path") or config.get("gemini_prompt_path"),  # Use same prompt
+                output_dir=output_dir,
+                max_concurrent_requests=config.get("groq_max_concurrent", 4),
+                save_results=config.get("save_groq_json", True),
+                model=config.get("groq_model", "llama-3.3-70b-versatile")
+            )
+        else:
+            from .gemini_analyzer import GeminiIconAnalyzer
+            analyzer = GeminiIconAnalyzer(
+                prompt_path=config.get("gemini_prompt_path"),  # Pass None to use default
+                output_dir=output_dir,
+                max_concurrent_requests=config.get("gemini_max_concurrent", 4),
+                save_results=config.get("save_gemini_json", True)
+            )
         
         # Use direct image mode for optimized sharing
-        if config.get("gemini_return_images_b64", True):
+        use_direct_images = config.get("groq_return_images_b64", True) if llm_provider == "groq" else config.get("gemini_return_images_b64", True)
+        
+        if use_direct_images:
             debug_print("   📸 Using optimized direct image mode (faster, less I/O)")
             
             from .seraphine_generator import FinalGroupImageGenerator
@@ -167,18 +206,20 @@ async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_pat
             direct_images = result.get('direct_images', [])
             
             if not direct_images or len(direct_images) == 0:
-                print(f"🤖 [GEMINI] ❌ ERROR: No images generated for Gemini analysis!")
-                print(f"🤖 [GEMINI]    This means no groups were available to analyze")
-                print(f"🤖 [GEMINI]    Check why all groups have explore=False")
+                provider_name = "Groq" if llm_provider == "groq" else "Gemini"
+                print(f"{'🚀 [GROQ]' if llm_provider == 'groq' else '🤖 [GEMINI]'} ❌ ERROR: No images generated for {provider_name} analysis!")
+                print(f"{'🚀 [GROQ]' if llm_provider == 'groq' else '🤖 [GEMINI]'}    This means no groups were available to analyze")
+                print(f"{'🚀 [GROQ]' if llm_provider == 'groq' else '🤖 [GEMINI]'}    Check why all groups have explore=False")
                 return None
             
-            print(f"🤖 [GEMINI] 🖼️  Generated {len(direct_images)} grouped images for analysis")
-            print(f"🤖 [GEMINI] 📋 Each image contains UI elements with labeled IDs (H1_1, H2_3, etc.)")
-            debug_print(f"   🖼️  Generated {len(direct_images)} direct images for Gemini analysis")
+            provider_emoji = "🚀 [GROQ]" if llm_provider == "groq" else "🤖 [GEMINI]"
+            print(f"{provider_emoji} 🖼️  Generated {len(direct_images)} grouped images for analysis")
+            print(f"{provider_emoji} 📋 Each image contains UI elements with labeled IDs (H1_1, H2_3, etc.)")
+            debug_print(f"   🖼️  Generated {len(direct_images)} direct images for {llm_provider} analysis")
             
             # Analyze with direct images (no file I/O)
-            print(f"🤖 [GEMINI] 🚀 Starting Gemini API calls for {len(direct_images)} images...")
-            gemini_results = await analyzer.analyze_grouped_images(
+            print(f"{provider_emoji} 🚀 Starting {llm_provider.upper()} API calls for {len(direct_images)} images...")
+            llm_results = await analyzer.analyze_grouped_images(
                 grouped_image_paths=None,
                 filename_base=filename_base,
                 direct_images=direct_images
@@ -186,36 +227,48 @@ async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_pat
         else:
             debug_print("   📁 Using file mode (traditional)")
             # Use traditional file mode
-            gemini_results = await analyzer.analyze_grouped_images(
+            llm_results = await analyzer.analyze_grouped_images(
                 grouped_image_paths=grouped_image_paths,
                 filename_base=filename_base,
                 direct_images=None
             )
         
         # ✅ ALWAYS PRINT - Show summary
+        provider_emoji = "🚀 [GROQ]" if llm_provider == "groq" else "🤖 [GEMINI]"
+        provider_name = "GROQ" if llm_provider == "groq" else "GEMINI"
         print("\n" + "="*80)
-        print("🤖 [GEMINI] ===== GEMINI ANALYSIS COMPLETE =====")
-        print(f"🤖 [GEMINI] ✅ Successfully analyzed: {gemini_results['successful_analyses']}/{gemini_results['total_images_analyzed']} images")
-        print(f"🤖 [GEMINI] 🎯 Total icons/buttons identified: {gemini_results['total_icons_found']}")
-        print(f"🤖 [GEMINI] ⏱️  Total analysis time: {gemini_results['analysis_duration_seconds']:.2f}s")
+        print(f"{provider_emoji} ===== {provider_name} ANALYSIS COMPLETE =====")
+        print(f"{provider_emoji} ✅ Successfully analyzed: {llm_results['successful_analyses']}/{llm_results['total_images_analyzed']} images")
+        print(f"{provider_emoji} 🎯 Total icons/buttons identified: {llm_results['total_icons_found']}")
+        print(f"{provider_emoji} ⏱️  Total analysis time: {llm_results['analysis_duration_seconds']:.2f}s")
         print("="*80 + "\n")
         
-        debug_print(f"✅ Gemini analysis complete:")
-        debug_print(f"   🖼️  Analyzed: {gemini_results['successful_analyses']}/{gemini_results['total_images_analyzed']} images")
-        debug_print(f"   🎯 Total icons found: {gemini_results['total_icons_found']}")
-        debug_print(f"   ⏱️  Analysis time: {gemini_results['analysis_duration_seconds']:.2f}s")
+        debug_print(f"✅ {llm_provider} analysis complete:")
+        debug_print(f"   🖼️  Analyzed: {llm_results['successful_analyses']}/{llm_results['total_images_analyzed']} images")
+        debug_print(f"   🎯 Total icons found: {llm_results['total_icons_found']}")
+        debug_print(f"   ⏱️  Analysis time: {llm_results['analysis_duration_seconds']:.2f}s")
         
-        return gemini_results
+        return llm_results
         
-    except ImportError:
-        print("🤖 [GEMINI] ❌ ERROR: Gemini analyzer not available (missing dependencies)")
-        print("🤖 [GEMINI]    Install with: pip install google-genai")
-        debug_print("❌ Gemini analyzer not available (missing dependencies)")
+    except ImportError as e:
+        provider_emoji = "🚀 [GROQ]" if llm_provider == "groq" else "🤖 [GEMINI]"
+        provider_name = "Groq" if llm_provider == "groq" else "Gemini"
+        package_name = "groq" if llm_provider == "groq" else "google-genai"
+        print(f"{provider_emoji} ❌ ERROR: {provider_name} analyzer not available (missing dependencies)")
+        print(f"{provider_emoji}    Install with: pip install {package_name}")
+        debug_print(f"❌ {provider_name} analyzer not available (missing dependencies)")
         return None
     except Exception as e:
-        print(f"🤖 [GEMINI] ❌ ERROR: Gemini analysis failed: {str(e)}")
+        provider_emoji = "🚀 [GROQ]" if llm_provider == "groq" else "🤖 [GEMINI]"
+        print(f"{provider_emoji} ❌ ERROR: {llm_provider} analysis failed: {str(e)}")
         import traceback
-        print(f"🤖 [GEMINI] Full error traceback:")
+        print(f"{provider_emoji} Full error traceback:")
         traceback.print_exc()
-        debug_print(f"❌ Gemini analysis failed: {str(e)}")
+        debug_print(f"❌ {llm_provider} analysis failed: {str(e)}")
         return None
+
+
+# Keep backward compatibility
+async def run_gemini_analysis(seraphine_analysis, grouped_image_paths, image_path, config):
+    """Backward compatibility wrapper - redirects to run_llm_analysis"""
+    return await run_llm_analysis(seraphine_analysis, grouped_image_paths, image_path, config)

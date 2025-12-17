@@ -24,7 +24,7 @@ from seraphine_pipeline.pipeline_exporter import save_enhanced_pipeline_json, cr
 from concurrent.futures import ThreadPoolExecutor
 from seraphine_pipeline.parallel_processor import ParallelProcessor
 from seraphine_pipeline.helpers import load_configuration, debug_print
-from seraphine_pipeline.seraphine_preprocessor import create_group_visualization, analyze_supergroups_with_gemini, integrate_supergroup_analysis
+from seraphine_pipeline.seraphine_preprocessor import create_group_visualization, analyze_supergroups_with_llm, integrate_supergroup_analysis
 from seraphine_pipeline.splashscreen_handler import handle_splash_screen_if_needed
 
 # Add this right after the imports, before the main() function
@@ -230,19 +230,22 @@ def run_seraphine_grouping(merged_detections, config, image_path=None):
                                      config.get("output_dir", "outputs"), app_name)
             enhanced_analysis['supergroup_visualization_path'] = visualization_path
             
-            # Run Gemini analysis and integrate results into existing structure
+            # Run LLM analysis (Groq or Gemini) and integrate results into existing structure
             try:
+                # Determine which LLM to use for supergroup analysis
+                use_groq = config.get("groq_enabled", True)  # Default to Groq
+                
                 # Handle event loop correctly
                 try:
                     loop = asyncio.get_running_loop()
                     # We're in an existing loop, so schedule the coroutine
                     import concurrent.futures
                     with concurrent.futures.ThreadPoolExecutor() as executor:
-                        future = executor.submit(asyncio.run, analyze_supergroups_with_gemini(visualization_path))
+                        future = executor.submit(asyncio.run, analyze_supergroups_with_llm(visualization_path, use_groq=use_groq))
                         supergroup_analysis_text = future.result()
                 except RuntimeError:
                     # No event loop, create new one
-                    supergroup_analysis_text = asyncio.run(analyze_supergroups_with_gemini(visualization_path))
+                    supergroup_analysis_text = asyncio.run(analyze_supergroups_with_llm(visualization_path, use_groq=use_groq))
                 
                 if supergroup_analysis_text:
                     # ✅ INTEGRATE supergroup analysis
@@ -577,38 +580,43 @@ async def main(image_path=None):
                 
                 debug_print(f"✅ Generated {len(grouped_image_paths)} grouped images")
             
-            # Step 4: Gemini Analysis
-            gemini_results = None
-            if config.get("gemini_enabled", False):
-                print("\n🤖 [GEMINI] Gemini is ENABLED in config - proceeding with analysis...")
+            # Step 4: LLM Analysis (Groq or Gemini)
+            llm_results = None
+            groq_enabled = config.get("groq_enabled", True)  # Default to Groq
+            gemini_enabled = config.get("gemini_enabled", False)
+            
+            if groq_enabled or gemini_enabled:
+                provider = "Groq" if groq_enabled else "Gemini"
+                print(f"\n🤖 [LLM] {provider} is ENABLED in config - proceeding with analysis...")
                 try:
-                    gemini_results = await run_gemini_analysis(
+                    from seraphine_pipeline.gemini_integration import run_llm_analysis, integrate_llm_results
+                    llm_results = await run_llm_analysis(
                         seraphine_analysis, grouped_image_paths, image_path, config
                     )
                     
-                    if gemini_results:
-                        print("🤖 [GEMINI] ✅ Gemini results received, integrating into seraphine structure...")
+                    if llm_results:
+                        print(f"🤖 [LLM] ✅ {provider} results received, integrating into seraphine structure...")
                         # Store original merged detections for proper ID lookup
                         seraphine_analysis['original_merged_detections'] = detection_results['merged_detections']
-                        seraphine_analysis = integrate_gemini_results(seraphine_analysis, gemini_results)
+                        seraphine_analysis = integrate_llm_results(seraphine_analysis, llm_results)
                     else:
-                        print("🤖 [GEMINI] ⚠️  Gemini analysis returned no results!")
+                        print(f"🤖 [LLM] ⚠️  {provider} analysis returned no results!")
                         
                 except Exception as e:
-                    print(f"🤖 [GEMINI] ❌ ERROR: Gemini analysis failed with exception: {str(e)}")
+                    print(f"🤖 [LLM] ❌ ERROR: {provider} analysis failed with exception: {str(e)}")
                     import traceback
                     traceback.print_exc()
-                    debug_print(f"⚠️  Gemini analysis failed: {str(e)}")
+                    debug_print(f"⚠️  {provider} analysis failed: {str(e)}")
             else:
-                print("\n🤖 [GEMINI] ⚠️  Gemini is DISABLED in config.json")
-                print("🤖 [GEMINI]    Set 'gemini_enabled': true to enable Gemini analysis")
-                print("🤖 [GEMINI]    Without Gemini, elements will have 'Unknown' or 'unanalyzed' names")
+                print("\n🤖 [LLM] ⚠️  No LLM provider is ENABLED in config.json")
+                print("🤖 [LLM]    Set 'groq_enabled': true or 'gemini_enabled': true to enable LLM analysis")
+                print("🤖 [LLM]    Without LLM, elements will have 'Unknown' or 'unanalyzed' names")
             
             # Calculate total time BEFORE mode check
             total_time = time.time() - pipeline_start
             
-            # Get icon count BEFORE mode check
-            icon_count = gemini_results.get('total_icons_found', 0) if gemini_results else 0
+            # Get icon count BEFORE mode check (use llm_results instead of gemini_results)
+            icon_count = llm_results.get('total_icons_found', 0) if llm_results else 0
             
             # MODE-SPECIFIC OUTPUTS
             if mode == "deploy_mcp":
@@ -623,14 +631,14 @@ async def main(image_path=None):
                     os.makedirs(output_dir, exist_ok=True)
                 
                 # Return only essential data
-                field_name = 'seraphine_gemini_groups' if gemini_results else 'seraphine_groups'
+                field_name = 'seraphine_gemini_groups' if llm_results else 'seraphine_groups'
                 result = {
                     'total_time': total_time,
                     'total_icons_found': icon_count,
                 }
                 
                 # ✅ FIX: Get the actual element groups with proper bbox data
-                if gemini_results and 'seraphine_gemini_groups' in seraphine_analysis:
+                if llm_results and 'seraphine_gemini_groups' in seraphine_analysis:
                     result[field_name] = seraphine_analysis['seraphine_gemini_groups']
                 else:
                     # Create the enhanced structure from bbox_processor if it doesn't exist
@@ -648,18 +656,18 @@ async def main(image_path=None):
             
             else:  # DEBUG MODE - Full verbose output with emojis
                 # Step 5: Save JSON
-                json_path = save_enhanced_pipeline_json(image_path, detection_results, seraphine_analysis, gemini_results, config)
+                json_path = save_enhanced_pipeline_json(image_path, detection_results, seraphine_analysis, llm_results, config)
                 
                 # Step 6: Create Visualizations
-                visualization_paths = create_visualizations(image_path, detection_results, seraphine_analysis, config, gemini_results)
+                visualization_paths = create_visualizations(image_path, detection_results, seraphine_analysis, config, llm_results)
                 
                 # Summary
-                display_enhanced_pipeline_summary(image_path, detection_results, seraphine_analysis, gemini_results, visualization_paths, json_path, config)
+                display_enhanced_pipeline_summary(image_path, detection_results, seraphine_analysis, llm_results, visualization_paths, json_path, config)
                 
                 return {
                     'detection_results': detection_results,
                     'seraphine_analysis': seraphine_analysis,
-                    'gemini_results': gemini_results,
+                    'gemini_results': llm_results,  # Keep key name for backward compatibility, but use llm_results
                     'grouped_image_paths': grouped_image_paths,
                     'visualization_paths': visualization_paths,
                     'json_path': json_path,

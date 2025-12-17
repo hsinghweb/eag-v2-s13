@@ -24,11 +24,18 @@
     "seraphine_timing": false,
     "seraphine_enable_debug": false,
 
-    "gemini_enabled": true,
+    "llm_provider": "groq",
+    "groq_enabled": true,
+    "groq_model": "llama-3.3-70b-versatile",
+    "groq_prompt_path": "utils/seraphine_pipeline/prompt.txt",
+    "groq_return_images_b64": true,
+    "groq_max_concurrent": 4,
+    "save_groq_json": true,
+
+    "gemini_enabled": false,
     "gemini_prompt_path": "utils/seraphine_pipeline/prompt.txt",
     "gemini_return_images_b64": true,
     "gemini_max_concurrent": 4,
-
     "save_gemini_visualization": true,
     "save_gemini_json": true,
 

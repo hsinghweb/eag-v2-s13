@@ -218,64 +218,129 @@ def _load_preprocessor_prompt() -> str:
 
 
 # Add a separate async function for the pipeline to call
-async def analyze_supergroups_with_gemini(image_path: str) -> Optional[str]:
-    """Analyze the group visualization image with Gemini (to be called by async pipeline)"""
+async def analyze_supergroups_with_llm(image_path: str, use_groq: bool = True) -> Optional[str]:
+    """Analyze the group visualization image with LLM (Groq or Gemini)"""
     
-    if not GEMINI_AVAILABLE:
-        print(f"[PREPROCESSOR] ⚠️  Skipping Gemini analysis (not available)")
-        return None
-        
-    # Load prompt
-    prompt = _load_preprocessor_prompt()
-    if not prompt:
-        return None
-    
-    # Initialize Gemini client
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        print(f"[PREPROCESSOR ERROR] GEMINI_API_KEY not found in environment variables")
-        return None
-    
-    client = genai.Client(api_key=api_key)
-    
-    try:
-        # Load image with debugging
-        image = Image.open(image_path)
-        # ✅ SCALE SMALL IMAGES FOR BETTER GEMINI ANALYSIS
-        width, height = image.size
-        if width < 200 and height < 200:
-            # Scale maintaining aspect ratio - make larger dimension 400px
-            scale_factor = 400 / max(width, height)
-            new_width = int(width * scale_factor)
-            new_height = int(height * scale_factor)
+    if use_groq:
+        # Try Groq first
+        try:
+            from groq import Groq
+            import base64
+            import io
             
-            # Resize using high-quality resampling
-            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-            print(f"[PREPROCESSOR DEBUG] ✅ Scaled small image: {width}x{height} → {new_width}x{new_height}")
-        else:
-            print(f"[PREPROCESSOR DEBUG] Image size OK: {width}x{height}, no scaling needed")
+            api_key = os.getenv("GROQ_API_KEY")
+            if not api_key:
+                print(f"[PREPROCESSOR] ⚠️  GROQ_API_KEY not found, trying Gemini...")
+                use_groq = False
+            else:
+                client = Groq(api_key=api_key)
+                prompt = _load_preprocessor_prompt()
+                if not prompt:
+                    return None
+                
+                # Load and prepare image
+                image = Image.open(image_path)
+                width, height = image.size
+                if width < 200 and height < 200:
+                    scale_factor = 400 / max(width, height)
+                    new_width = int(width * scale_factor)
+                    new_height = int(height * scale_factor)
+                    image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                    print(f"[PREPROCESSOR] ✅ Scaled small image: {width}x{height} → {new_width}x{new_height}")
+                
+                # Convert to base64
+                buffered = io.BytesIO()
+                image.save(buffered, format="PNG")
+                img_str = base64.b64encode(buffered.getvalue()).decode()
+                
+                # Call Groq API
+                print(f"[PREPROCESSOR] 🚀 Calling Groq API for supergroup analysis...")
+                response = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": prompt},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": f"data:image/png;base64,{img_str}"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    temperature=0.1,
+                    max_tokens=4096
+                )
+                
+                return response.choices[0].message.content
+        except ImportError:
+            print(f"[PREPROCESSOR] ⚠️  Groq not available, trying Gemini...")
+            use_groq = False
+        except Exception as e:
+            print(f"[PREPROCESSOR ERROR] Groq analysis error: {e}")
+            print(f"[PREPROCESSOR] ⚠️  Falling back to Gemini...")
+            use_groq = False
+    
+    # Fallback to Gemini
+    if not use_groq:
+        if not GEMINI_AVAILABLE:
+            print(f"[PREPROCESSOR] ⚠️  Skipping LLM analysis (neither Groq nor Gemini available)")
+            return None
+            
+        # Load prompt
+        prompt = _load_preprocessor_prompt()
+        if not prompt:
+            return None
         
-        # Call Gemini API
-        response = await client.aio.models.generate_content(
-            model="gemini-2.0-flash-exp",
-            contents=[prompt, image],
-        )
+        # Initialize Gemini client
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            print(f"[PREPROCESSOR ERROR] GEMINI_API_KEY not found in environment variables")
+            return None
         
-        # # Print raw results on console
-        # print(f"\n{'='*80}")
-        # print(f"🤖 GEMINI SUPERGROUP ANALYSIS RESULTS")
-        # print(f"{'='*80}")
-        # print(response.text)
-        # print(f"{'='*80}\n")
+        client = genai.Client(api_key=api_key)
         
-        return response.text
-        
-    except ServerError as e:
-        print(f"[PREPROCESSOR ERROR] Gemini server error: {e}")
-        return None
-    except Exception as e:
-        print(f"[PREPROCESSOR ERROR] Gemini analysis error: {e}")
-        return None
+        try:
+            # Load image with debugging
+            image = Image.open(image_path)
+            # ✅ SCALE SMALL IMAGES FOR BETTER GEMINI ANALYSIS
+            width, height = image.size
+            if width < 200 and height < 200:
+                # Scale maintaining aspect ratio - make larger dimension 400px
+                scale_factor = 400 / max(width, height)
+                new_width = int(width * scale_factor)
+                new_height = int(height * scale_factor)
+                
+                # Resize using high-quality resampling
+                image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                print(f"[PREPROCESSOR DEBUG] ✅ Scaled small image: {width}x{height} → {new_width}x{new_height}")
+            else:
+                print(f"[PREPROCESSOR DEBUG] Image size OK: {width}x{height}, no scaling needed")
+            
+            # Call Gemini API
+            print(f"[PREPROCESSOR] 🤖 Calling Gemini API for supergroup analysis...")
+            response = await client.aio.models.generate_content(
+                model="gemini-2.0-flash-exp",
+                contents=[prompt, image],
+            )
+            
+            return response.text
+            
+        except ServerError as e:
+            print(f"[PREPROCESSOR ERROR] Gemini server error: {e}")
+            return None
+        except Exception as e:
+            print(f"[PREPROCESSOR ERROR] Gemini analysis error: {e}")
+            return None
+
+
+# Keep backward compatibility
+async def analyze_supergroups_with_gemini(image_path: str) -> Optional[str]:
+    """Backward compatibility wrapper - redirects to analyze_supergroups_with_llm"""
+    return await analyze_supergroups_with_llm(image_path, use_groq=False)
 
 
 def _calculate_group_bounds(bboxes) -> Tuple[int, int, int, int]:
