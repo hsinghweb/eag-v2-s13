@@ -259,7 +259,7 @@ def run_seraphine_grouping(merged_detections, config, image_path=None):
                     print(f"[SERAPHINE] 📊 Explore flags: {explore_true_count}/{total_groups} groups have explore=True")
                     if explore_true_count == 0:
                         print(f"[SERAPHINE] ⚠️  WARNING: No groups have explore=True after supergroup analysis!")
-                        print(f"[SERAPHINE]    This means Gemini icon analysis may use fallback (all groups)")
+                        print(f"[SERAPHINE]    This means Groq/Gemini LLM icon analysis may use fallback (all groups)")
                     
                     # ✅ CHECK FOR SPLASH SCREEN AND HANDLE IT  
                     splash_result = handle_splash_screen_if_needed(enhanced_analysis, image_path, "fdom.json")
@@ -272,7 +272,7 @@ def run_seraphine_grouping(merged_detections, config, image_path=None):
                 else:
                     print(f"[SERAPHINE] ⚠️  No supergroup analysis received")
                     print(f"[SERAPHINE]    This means explore flags won't be set, and all groups will default to explore=False")
-                    print(f"[SERAPHINE]    Gemini analysis will use fallback mode (analyze all groups)")
+                    print(f"[SERAPHINE]    Groq/Gemini LLM analysis will use fallback mode (analyze all groups)")
                     
             except Exception as e:
                 print(f"[SERAPHINE ERROR] Supergroup analysis failed: {e}")

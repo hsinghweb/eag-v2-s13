@@ -6,15 +6,15 @@ from .helpers import debug_print
 
 def integrate_llm_results(seraphine_analysis, llm_results):
     """
-    Integrate Gemini results into seraphine structure at individual bbox level
+    Integrate LLM (Groq or Gemini) results into seraphine structure at individual bbox level
     """
-    if not gemini_results or not gemini_results.get('images'):
-        debug_print("⚠️  No Gemini results to integrate")
+    if not llm_results or not llm_results.get('images'):
+        debug_print("⚠️  No LLM results to integrate")
         return seraphine_analysis
     
     # ✅ ALWAYS PRINT - Show integration start
-    print("\n🤖 [LLM] ===== INTEGRATING LLM RESULTS =====")
-    print("🤖 [LLM] Mapping LLM icon names to seraphine groups...")
+    print("\n🚀 [GROQ] ===== INTEGRATING GROQ LLM RESULTS =====")
+    print("🚀 [GROQ] Mapping Groq icon names to seraphine groups...")
     
     debug_print("\n🔗 Integrating LLM results into seraphine structure...")
     
@@ -35,9 +35,9 @@ def integrate_llm_results(seraphine_analysis, llm_results):
                     }
                     # Show first few mappings
                     if len(id_to_llm) <= 5:
-                        print(f"🤖 [LLM]   Mapping: {icon_id} → '{icon.get('name', 'unknown')}'")
+                        print(f"🚀 [GROQ]   Mapping: {icon_id} → '{icon.get('name', 'unknown')}'")
     
-    print(f"🤖 [LLM] ✅ Created {len(id_to_llm)} icon name mappings from LLM")
+    print(f"🚀 [GROQ] ✅ Created {len(id_to_llm)} icon name mappings from Groq")
     debug_print(f"   📋 Found {len(id_to_llm)} LLM mappings to integrate")
     
     # Integrate results into seraphine bbox_processor
@@ -49,50 +49,51 @@ def integrate_llm_results(seraphine_analysis, llm_results):
         for i, bbox in enumerate(boxes):
             item_id = f"{group_id}_{i+1}"  # H1_1, H1_2, etc.
             
-            if item_id in id_to_gemini:
+            if item_id in id_to_llm:
                 # Found exact match!
-                gemini_data = id_to_gemini[item_id]
-                bbox.g_icon_name = gemini_data['icon_name']
-                bbox.g_brief = gemini_data['brief']
-                bbox.g_enabled = gemini_data['enabled']
-                bbox.g_interactive = gemini_data['interactive']
-                bbox.g_type = gemini_data['type']  # New field
+                llm_data = id_to_llm[item_id]
+                bbox.g_icon_name = llm_data['icon_name']
+                bbox.g_brief = llm_data['brief']
+                bbox.g_enabled = llm_data['enabled']
+                bbox.g_interactive = llm_data['interactive']
+                bbox.g_type = llm_data['type']  # New field
                 total_integrated += 1
                 
                 if total_integrated <= 5:  # Show first 5 for debugging
-                    debug_print(f"   ✅ {item_id}: '{gemini_data['icon_name']}' - {gemini_data['brief'][:50]}...")
+                    debug_print(f"   ✅ {item_id}: '{llm_data['icon_name']}' - {llm_data['brief'][:50]}...")
             else:
-                # Default values if no Gemini result available
+                # Default values if no LLM result available
                 bbox.g_icon_name = 'unanalyzed'
-                bbox.g_brief = 'Not analyzed by Gemini'
+                bbox.g_brief = 'Not analyzed by Groq LLM'
     
     total_elements = sum(len(boxes) for boxes in bbox_processor.final_groups.values())
-    print(f"🤖 [GEMINI] ✅ Integrated: {total_integrated}/{total_elements} elements updated with Gemini names")
+    print(f"🚀 [GROQ] ✅ Integrated: {total_integrated}/{total_elements} elements updated with Groq names")
     if total_integrated < total_elements:
-        print(f"🤖 [GEMINI] ⚠️  {total_elements - total_integrated} elements did NOT get Gemini names (will show 'unanalyzed')")
-        print(f"🤖 [GEMINI]    This may indicate ID mismatch between Gemini results and seraphine groups")
+        print(f"🚀 [GROQ] ⚠️  {total_elements - total_integrated} elements did NOT get Groq names (will show 'unanalyzed')")
+        print(f"🚀 [GROQ]    This may indicate ID mismatch between Groq results and seraphine groups")
     
-    debug_print(f"✅ Integrated Gemini results: {total_integrated}/{total_elements} items updated")
+    debug_print(f"✅ Integrated Groq results: {total_integrated}/{total_elements} items updated")
     
-    # 🎯 NEW: REGENERATE SERAPHINE_GEMINI_GROUPS WITH UPDATED DATA
+    # 🎯 REGENERATE SERAPHINE_LLM_GROUPS WITH UPDATED DATA
+    # Keep using 'seraphine_gemini_groups' key for backward compatibility
     from .pipeline_exporter import create_enhanced_seraphine_structure
     
     # Get the merged_detections from analysis for proper ID lookup
     merged_detections = seraphine_analysis.get('original_merged_detections', [])
     
-    # Create the enhanced structure with integrated Gemini data
-    seraphine_gemini_groups = create_enhanced_seraphine_structure(
+    # Create the enhanced structure with integrated Groq data
+    seraphine_llm_groups = create_enhanced_seraphine_structure(
         seraphine_analysis, 
         merged_detections
     )
     
-    # Add it to the analysis
-    seraphine_analysis['seraphine_gemini_groups'] = seraphine_gemini_groups
+    # Add it to the analysis (keep key name for backward compatibility)
+    seraphine_analysis['seraphine_gemini_groups'] = seraphine_llm_groups
     
-    print(f"🤖 [LLM] 🎯 Generated seraphine_gemini_groups with {len(seraphine_gemini_groups)} groups")
-    print("🤖 [LLM] ===== INTEGRATION COMPLETE =====\n")
+    print(f"🚀 [GROQ] 🎯 Generated seraphine_gemini_groups with {len(seraphine_llm_groups)} groups (Groq data)")
+    print("🚀 [GROQ] ===== INTEGRATION COMPLETE =====\n")
     
-    debug_print(f"🎯 Generated seraphine_gemini_groups with {len(seraphine_gemini_groups)} groups")
+    debug_print(f"🎯 Generated seraphine_gemini_groups with {len(seraphine_llm_groups)} groups")
     
     return seraphine_analysis
 
@@ -131,7 +132,7 @@ async def run_llm_analysis(seraphine_analysis, grouped_image_paths, image_path, 
     
     print(f"📸 Analyzing screenshot: {image_path}")
     
-    # Check for API key
+    # Check for API key - PRIORITIZE GROQ
     import os
     if llm_provider == "groq":
         api_key = os.getenv("GROQ_API_KEY")
@@ -142,6 +143,7 @@ async def run_llm_analysis(seraphine_analysis, grouped_image_paths, image_path, 
             return None
         else:
             print(f"🚀 [GROQ] ✅ GROQ_API_KEY found (length: {len(api_key)} chars)")
+            print(f"🚀 [GROQ] 🎯 Using Groq for all icon/button caption and description generation")
     else:
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:

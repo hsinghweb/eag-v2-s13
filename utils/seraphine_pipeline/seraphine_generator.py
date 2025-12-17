@@ -71,13 +71,13 @@ class FinalGroupImageGenerator:
         
         print(f"[GENERATOR] 🔍 Final result: {total_count} total groups → {explore_count} explore=True groups")
         
-        # ✅ FALLBACK: If no groups have explore=True, use ALL groups for Gemini analysis
-        # This ensures Gemini can still analyze elements even if supergroup analysis didn't run
+        # ✅ FALLBACK: If no groups have explore=True, use ALL groups for Groq/Gemini LLM analysis
+        # This ensures LLM can still analyze elements even if supergroup analysis didn't run
         if explore_count == 0:
             print(f"[GENERATOR] ⚠️  WARNING: No groups have explore=True!")
             print(f"[GENERATOR]    This usually means supergroup analysis didn't run or failed")
-            print(f"[GENERATOR]    FALLBACK: Using ALL {total_count} groups for Gemini analysis")
-            print(f"[GENERATOR]    This ensures elements can still get Gemini-generated names")
+            print(f"[GENERATOR]    FALLBACK: Using ALL {total_count} groups for Groq/Gemini LLM analysis")
+            print(f"[GENERATOR]    This ensures elements can still get LLM-generated names")
             filtered_groups = original_final_groups  # Use all groups as fallback
             explore_count = total_count
         

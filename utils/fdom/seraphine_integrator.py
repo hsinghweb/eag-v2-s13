@@ -49,7 +49,7 @@ class SeraphineIntegrator:
         
         # Call Seraphine
         self.console.print(f"[cyan]🔍 Analyzing screenshot: {screenshot_path}[/cyan]")
-        self.console.print(f"[yellow]📋 Note: Gemini analysis should be enabled in utils/seraphine_pipeline/config.json[/yellow]")
+        self.console.print(f"[yellow]📋 Note: Groq LLM analysis should be enabled in utils/seraphine_pipeline/config.json[/yellow]")
         
         seraphine_result = process_image_sync(screenshot_path)  # ✅ FIXED: Use imported function directly
         
@@ -61,22 +61,23 @@ class SeraphineIntegrator:
         self.console.print(f"[cyan]🔍 DEBUG: seraphine_result keys: {list(seraphine_result.keys())}[/cyan]")
         
         # ✅ FIXED: Extract the correct groups structure - prefer seraphine_gemini_groups if key exists
+        # Note: 'seraphine_gemini_groups' key is used for both Groq and Gemini results (backward compatibility)
         # Check if seraphine_gemini_groups key exists (even if empty), otherwise fall back to seraphine_groups
-        has_gemini = 'seraphine_gemini_groups' in seraphine_result
+        has_llm = 'seraphine_gemini_groups' in seraphine_result
         has_fallback = 'seraphine_groups' in seraphine_result
         
-        if has_gemini:
+        if has_llm:
             seraphine_groups = seraphine_result['seraphine_gemini_groups']
-            self.console.print(f"[green]✅ Using seraphine_gemini_groups (Gemini analysis was used)[/green]")
+            self.console.print(f"[green]✅ Using seraphine_gemini_groups (Groq/Gemini LLM analysis was used)[/green]")
             self.console.print(f"[green]   Groups found: {len(seraphine_groups) if isinstance(seraphine_groups, dict) else 'N/A'}[/green]")
         elif has_fallback:
             seraphine_groups = seraphine_result['seraphine_groups']
-            self.console.print(f"[yellow]⚠️ Using seraphine_groups (Gemini analysis NOT used - fallback mode)[/yellow]")
+            self.console.print(f"[yellow]⚠️ Using seraphine_groups (LLM analysis NOT used - fallback mode)[/yellow]")
             self.console.print(f"[yellow]   This means either:[/yellow]")
-            self.console.print(f"[yellow]   1. Gemini is disabled in utils/seraphine_pipeline/config.json[/yellow]")
-            self.console.print(f"[yellow]   2. GEMINI_API_KEY environment variable is not set[/yellow]")
-            self.console.print(f"[yellow]   3. Gemini analysis failed (check error messages above)[/yellow]")
-            self.console.print(f"[yellow]   Elements will have 'Unknown' or 'unanalyzed' names without Gemini[/yellow]")
+            self.console.print(f"[yellow]   1. Groq/Gemini is disabled in utils/seraphine_pipeline/config.json[/yellow]")
+            self.console.print(f"[yellow]   2. GROQ_API_KEY or GEMINI_API_KEY environment variable is not set[/yellow]")
+            self.console.print(f"[yellow]   3. LLM analysis failed (check error messages above)[/yellow]")
+            self.console.print(f"[yellow]   Elements will have 'Unknown' or 'unanalyzed' names without LLM[/yellow]")
         else:
             self.console.print("[red]❌ No seraphine groups found in result (neither seraphine_gemini_groups nor seraphine_groups keys exist)[/red]")
             return {}
@@ -118,26 +119,27 @@ class SeraphineIntegrator:
         if not fdom_nodes:
             return {}
         
-        # ✅ DEBUG: Check if we have proper Gemini data (not "Unknown" or "unanalyzed")
+        # ✅ DEBUG: Check if we have proper LLM data (not "Unknown" or "unanalyzed")
         unknown_count = sum(1 for node in fdom_nodes.values() 
                           if node.get('g_icon_name', '').lower() in ['unknown', 'unanalyzed', ''])
         if unknown_count > 0:
             self.console.print(f"[yellow]⚠️ Warning: {unknown_count}/{len(fdom_nodes)} elements have 'Unknown' or 'unanalyzed' names[/yellow]")
-            if not has_gemini:
-                self.console.print(f"[yellow]   ⚠️ CRITICAL: Gemini analysis was NOT used! Elements will have default names.[/yellow]")
+            if not has_llm:
+                self.console.print(f"[yellow]   ⚠️ CRITICAL: Groq/Gemini LLM analysis was NOT used! Elements will have default names.[/yellow]")
                 self.console.print(f"[yellow]   To fix:[/yellow]")
-                self.console.print(f"[yellow]   1. Set GEMINI_API_KEY environment variable[/yellow]")
-                self.console.print(f"[yellow]   2. Ensure 'gemini_enabled': true in utils/seraphine_pipeline/config.json[/yellow]")
+                self.console.print(f"[yellow]   1. Set GROQ_API_KEY environment variable (recommended)[/yellow]")
+                self.console.print(f"[yellow]   2. Or set GEMINI_API_KEY environment variable[/yellow]")
+                self.console.print(f"[yellow]   3. Ensure 'groq_enabled': true in utils/seraphine_pipeline/config.json[/yellow]")
             else:
-                self.console.print(f"[yellow]   Even though seraphine_gemini_groups exists, some elements lack Gemini data[/yellow]")
-                self.console.print(f"[yellow]   This may indicate ID mismatch between Gemini results and seraphine groups[/yellow]")
+                self.console.print(f"[yellow]   Even though seraphine_gemini_groups exists, some elements lack Groq/Gemini data[/yellow]")
+                self.console.print(f"[yellow]   This may indicate ID mismatch between LLM results and seraphine groups[/yellow]")
             # Show sample of unknown elements
             unknown_samples = [node_id for node_id, node in list(fdom_nodes.items())[:10] 
                               if node.get('g_icon_name', '').lower() in ['unknown', 'unanalyzed', '']]
             if unknown_samples:
                 self.console.print(f"[yellow]   Sample unknown elements: {unknown_samples[:5]}[/yellow]")
         else:
-            self.console.print(f"[green]✅ All {len(fdom_nodes)} elements have Gemini-generated names![/green]")
+            self.console.print(f"[green]✅ All {len(fdom_nodes)} elements have Groq/Gemini-generated names![/green]")
         
         # Save crops
         self._save_element_crops(screenshot_path, fdom_nodes, state_id, source_element_name)
@@ -163,7 +165,7 @@ class SeraphineIntegrator:
         self.console.print(Panel(summary_text, title="🔍 Seraphine Analysis Results"))
         
         # Detailed group table
-        seraphine_groups = seraphine_result.get('seraphine_gemini_groups', {})
+        seraphine_groups = seraphine_result.get('seraphine_gemini_groups', seraphine_result.get('seraphine_groups', {}))
         # if seraphine_groups:
         #     table = Table(title="Detected UI Elements by Group")
         #     table.add_column("Group", style="cyan")
