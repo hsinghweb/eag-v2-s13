@@ -58,12 +58,17 @@ class SeraphineIntegrator:
         # ✅ DEBUG: Show what Seraphine returned
         self.console.print(f"[cyan]🔍 DEBUG: seraphine_result keys: {list(seraphine_result.keys())}[/cyan]")
         
-        # ✅ FIXED: Extract the correct groups structure
-        seraphine_groups = seraphine_result.get('seraphine_gemini_groups', {})
+        # ✅ FIXED: Extract the correct groups structure - check both possible keys
+        # seraphine_gemini_groups (when Gemini is enabled) or seraphine_groups (when Gemini is disabled)
+        seraphine_groups = seraphine_result.get('seraphine_gemini_groups') or seraphine_result.get('seraphine_groups', {})
         
-        # ✅ NEW: If seraphine_gemini_groups contains metadata, extract group_details
+        if not seraphine_groups:
+            self.console.print("[red]❌ No seraphine groups found in result (neither seraphine_gemini_groups nor seraphine_groups)[/red]")
+            return {}
+        
+        # ✅ NEW: If seraphine_groups contains metadata, extract group_details
         if 'group_details' in seraphine_groups:
-            self.console.print(f"[cyan]🔧 Extracting group_details from seraphine_gemini_groups[/cyan]")
+            self.console.print(f"[cyan]🔧 Extracting group_details from seraphine_groups[/cyan]")
             actual_groups = seraphine_groups['group_details']
         else:
             # Fallback to the groups directly
@@ -71,15 +76,22 @@ class SeraphineIntegrator:
         
         # ✅ DEBUG: Show actual groups structure
         self.console.print(f"[cyan]🔍 DEBUG: actual_groups type: {type(actual_groups)}[/cyan]")
-        if isinstance(actual_groups, dict) and actual_groups:
-            sample_key = list(actual_groups.keys())[0]
-            sample_value = actual_groups[sample_key]
-            self.console.print(f"[cyan]🔍 DEBUG: Sample group {sample_key}: type={type(sample_value)}[/cyan]")
-            if isinstance(sample_value, dict):
-                self.console.print(f"[cyan]🔍 DEBUG: Sample group keys: {list(sample_value.keys())}[/cyan]")
+        if isinstance(actual_groups, dict):
+            self.console.print(f"[cyan]🔍 DEBUG: actual_groups has {len(actual_groups)} keys[/cyan]")
+            if actual_groups:
+                sample_key = list(actual_groups.keys())[0]
+                sample_value = actual_groups[sample_key]
+                self.console.print(f"[cyan]🔍 DEBUG: Sample group {sample_key}: type={type(sample_value)}[/cyan]")
+                if isinstance(sample_value, dict):
+                    self.console.print(f"[cyan]🔍 DEBUG: Sample group keys: {list(sample_value.keys())}[/cyan]")
+            else:
+                self.console.print(f"[yellow]⚠️ actual_groups is an empty dict[/yellow]")
+        else:
+            self.console.print(f"[yellow]⚠️ actual_groups is not a dict: {type(actual_groups)}[/yellow]")
         
         if not actual_groups:
             self.console.print("[red]❌ No actual groups found[/red]")
+            self.console.print(f"[red]   seraphine_groups type: {type(seraphine_groups)}, keys: {list(seraphine_groups.keys()) if isinstance(seraphine_groups, dict) else 'N/A'}[/red]")
             return {}
         
         # Display results

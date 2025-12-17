@@ -195,7 +195,7 @@ def run_seraphine_grouping(merged_detections, config, image_path=None):
     seraphine_detections = convert_merged_to_seraphine_format(merged_detections)
     
     # ✅ DEBUG: Check conversion
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()  # Removed for production use
     print(f"[DEBUG] seraphine_detections count: {len(seraphine_detections) if seraphine_detections else 'None'}")
     
     # Initialize BBoxProcessor
