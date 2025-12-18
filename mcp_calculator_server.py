@@ -38,6 +38,7 @@ class CalculatorController:
         self.gui_api = SimpleWindowAPI()
         self.window_id = None
         self.window_pos = None
+        self.calculator_maximized = False  # Track if calculator is already maximized
         self._load_fdom()
         
     def _load_fdom(self):
@@ -160,9 +161,18 @@ class CalculatorController:
             if window_id:
                 print("✅ Calculator already open")
                 self.window_id = window_id
-                # Force focus and update position
-                self.gui_api.focus_window(self.window_id)
-                time.sleep(0.5)
+                
+                # Maximize once if not already maximized
+                if not self.calculator_maximized:
+                    print("📐 Maximizing Calculator window (one time only)...")
+                    self.gui_api.maximize_window(self.window_id)
+                    time.sleep(1.0)  # Wait for maximize to complete
+                    self.calculator_maximized = True
+                else:
+                    # Just simple focus, no minimize/maximize
+                    self._simple_focus_window(self.window_id)
+                    time.sleep(0.2)
+                
                 self._update_window_position()
                 return {"success": True, "message": "Calculator already open", "window_id": window_id}
             
@@ -190,9 +200,13 @@ class CalculatorController:
                 if window_id:
                     self.window_id = window_id
                 
-                # Force focus before updating position
-                self.gui_api.focus_window(self.window_id)
-                time.sleep(0.5)
+                # Maximize once (AppController already maximizes, but mark as done)
+                self.calculator_maximized = True
+                print("✅ Calculator maximized (one time)")
+                
+                # Simple focus (no minimize/maximize)
+                self._simple_focus_window(self.window_id)
+                time.sleep(0.3)
                 self._update_window_position()
                 
                 # Verify we have the right window
@@ -207,6 +221,50 @@ class CalculatorController:
                 
         except Exception as e:
             return {"success": False, "error": str(e)}
+    
+    def _simple_focus_window(self, window_id: str) -> bool:
+        """Simple focus without minimize/maximize - just bring to foreground"""
+        try:
+            try:
+                import win32gui
+                import win32con
+            except ImportError:
+                # Fallback if win32gui not available
+                return self.gui_api.focus_window(window_id)
+            
+            window_info = self.gui_api.get_window_info(window_id)
+            if not window_info:
+                return False
+            
+            hwnd = window_info['window_data']['hwnd']
+            
+            # Check if already in foreground
+            try:
+                foreground_hwnd = win32gui.GetForegroundWindow()
+                if foreground_hwnd == hwnd:
+                    return True  # Already focused
+            except Exception:
+                pass
+            
+            # Simple bring to foreground without minimize/maximize
+            try:
+                # Restore if minimized
+                current_state = self.gui_api.get_window_state(window_id)
+                if current_state == "minimized":
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    time.sleep(0.2)
+                
+                # Bring to foreground
+                win32gui.SetForegroundWindow(hwnd)
+                time.sleep(0.1)
+                return True
+            except Exception as e:
+                print(f"⚠️ Simple focus failed: {e}, trying fallback")
+                # Fallback: use the smart_foreground only if simple fails
+                return self.gui_api.focus_window(window_id)
+        except Exception as e:
+            print(f"⚠️ Error in simple focus: {e}")
+            return False
     
     def _update_window_position(self):
         """Update window position for click calculations"""
@@ -227,7 +285,7 @@ class CalculatorController:
             print("⚠️ Window info not found, re-searching for Calculator...")
             self.window_id = self._find_calculator_window()
             if self.window_id:
-                self.gui_api.focus_window(self.window_id)
+                self._simple_focus_window(self.window_id)
                 time.sleep(0.3)
                 self._update_window_position()
             else:
@@ -272,9 +330,10 @@ class CalculatorController:
             abs_y = self.window_pos['top'] + center_y
             
             # CRITICAL: Ensure Calculator window is focused before clicking
-            print(f"🎯 Focusing Calculator window: {self.window_id}")
-            self.gui_api.focus_window(self.window_id)
-            time.sleep(0.5)  # Give time for focus to take effect
+            # Use simple focus (no minimize/maximize) since we already maximized once
+            print(f"🎯 Focusing Calculator window: {self.window_id} (simple focus, no minimize/maximize)")
+            self._simple_focus_window(self.window_id)
+            time.sleep(0.2)  # Brief pause for focus
             
             # Verify window is still correct
             window_info = self.gui_api.get_window_info(self.window_id)
