@@ -179,7 +179,8 @@ async def run_llm_analysis(seraphine_analysis, grouped_image_paths, image_path, 
                 prompt_path=config.get("gemini_prompt_path"),  # Pass None to use default
                 output_dir=output_dir,
                 max_concurrent_requests=config.get("gemini_max_concurrent", 4),
-                save_results=config.get("save_gemini_json", True)
+                save_results=config.get("save_gemini_json", True),
+                model=config.get("gemini_model", "gemini-2.0-flash-lite")
             )
         
         # Use direct image mode for optimized sharing

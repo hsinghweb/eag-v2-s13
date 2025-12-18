@@ -233,7 +233,8 @@ def run_seraphine_grouping(merged_detections, config, image_path=None):
             # Run LLM analysis (Groq or Gemini) and integrate results into existing structure
             try:
                 # Determine which LLM to use for supergroup analysis
-                use_groq = config.get("groq_enabled", True)  # Default to Groq
+                # Use Gemini if enabled, otherwise try Groq
+                use_groq = config.get("groq_enabled", False) and not config.get("gemini_enabled", False)
                 
                 # Handle event loop correctly
                 try:

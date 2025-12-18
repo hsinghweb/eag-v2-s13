@@ -322,8 +322,9 @@ async def analyze_supergroups_with_llm(image_path: str, use_groq: bool = True) -
             
             # Call Gemini API
             print(f"[PREPROCESSOR] 🤖 Calling Gemini API for supergroup analysis...")
+            print(f"[PREPROCESSOR] 🤖 Using model: gemini-2.0-flash-lite")
             response = await client.aio.models.generate_content(
-                model="gemini-2.0-flash-exp",
+                model="gemini-2.0-flash-lite",
                 contents=[prompt, image],
             )
             

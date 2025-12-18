@@ -36,8 +36,10 @@ class GeminiIconAnalyzer:
     def __init__(self, prompt_path: str = None, 
                  output_dir: str = "outputs", 
                  max_concurrent_requests: int = 4,
-                 save_results: bool = True):
+                 save_results: bool = True,
+                 model: str = "gemini-2.0-flash-lite"):
         self.output_dir = output_dir
+        self.model = model
         
         # Fix: Handle prompt path correctly
         if prompt_path is None:
@@ -273,7 +275,7 @@ class GeminiIconAnalyzer:
         
         # ✅ DEBUG: Show that we're calling Gemini
         print(f"\n🤖 [GEMINI] Calling Gemini API for image: {filename}")
-        print(f"🤖 [GEMINI] Model: gemini-2.0-flash-exp")
+        print(f"🤖 [GEMINI] Model: {self.model}")
         print(f"🤖 [GEMINI] Image size: {image.size if hasattr(image, 'size') else 'N/A'}")
         
         # ✅ DEBUG: Show the prompt being sent (first 500 chars)
@@ -294,7 +296,7 @@ class GeminiIconAnalyzer:
                     print(f"🤖 [GEMINI] Sending request to Gemini API...")
                 
                 response = await self.client.aio.models.generate_content(
-                    model="gemini-2.0-flash-exp",
+                    model=self.model,
                     contents=[self.prompt, image],
                 )
                 
