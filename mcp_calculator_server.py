@@ -353,13 +353,19 @@ class CalculatorController:
                         abs_x = self.window_pos['left'] + center_x
                         abs_y = self.window_pos['top'] + center_y
             
-            # Click the button
-            print(f"🖱️ Clicking {button_name} ({node_id}) at ({abs_x}, {abs_y})")
+            # Move mouse to position first (visible movement)
+            print(f"🖱️ Moving mouse to {button_name} ({node_id}) at ({abs_x}, {abs_y})")
             print(f"   Window: {self.window_id}, Window pos: {self.window_pos}")
+            self.gui_api.set_cursor_position(abs_x, abs_y)
+            time.sleep(1.0)  # Pause to show mouse movement
+            
+            # Click the button
+            print(f"🖱️ Clicking {button_name}...")
             success = self.gui_api.click(abs_x, abs_y)
             
             if success:
-                time.sleep(0.5)  # Wait for UI to update
+                print(f"✅ Clicked {button_name}, waiting 3 seconds before next action...")
+                time.sleep(4.0)  # 4 second pause between clicks for visibility
                 return {"success": True, "message": f"Clicked {button_name}", "node_id": node_id}
             else:
                 return {"success": False, "error": f"Failed to click {button_name}"}

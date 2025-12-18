@@ -53,8 +53,9 @@ def main():
     
     # Execute sequence
     print("\n🖱️ Executing clicks...")
+    print("⏱️  Note: 4 second pause between clicks for visibility")
     for i, button in enumerate(buttons, 1):
-        print(f"  {i}. Clicking '{button}'...")
+        print(f"\n  {i}/{len(buttons)}. Processing '{button}'...")
         result = calculator.click_button(button)
         if result.get("success"):
             print(f"     ✅ Success")
