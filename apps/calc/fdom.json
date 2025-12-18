@@ -1,0 +1,2289 @@
+{
+  "app_name": "calc",
+  "loaded": false,
+  "creation_timestamp": "2025-12-18T17:29:29.050374",
+  "navigation_tree": {},
+  "states": {
+    "root": {
+      "id": "root",
+      "parent": null,
+      "trigger_node": null,
+      "trigger_element": "initial_state",
+      "breadcrumb": "root",
+      "image": "D:\\Himanshu\\EAG-V2\\eag-v2-s13\\apps\\calc\\screenshots\\S001.png",
+      "creation_timestamp": "2025-12-18T17:29:35.754897",
+      "analysis_time": 0,
+      "total_elements": 61,
+      "nodes": {
+        "H0_1": {
+          "bbox": [
+            19,
+            58,
+            223,
+            101
+          ],
+          "g_icon_name": "Standard Menu",
+          "g_brief": "Opens calculator mode menu (Standard, Scientific, Programmer, etc.)",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H0",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H1_1": {
+          "bbox": [
+            22,
+            9,
+            154,
+            50
+          ],
+          "g_icon_name": "Calculator Title",
+          "g_brief": "Application title text 'Calculator'",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H1",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H2_1": {
+          "bbox": [
+            44,
+            328,
+            82,
+            355
+          ],
+          "g_icon_name": "MC Button",
+          "g_brief": "Memory Clear - clears all stored memory values",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H2",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H3_1": {
+          "bbox": [
+            144,
+            328,
+            182,
+            357
+          ],
+          "g_icon_name": "MR Button",
+          "g_brief": "Memory Recall - recalls the value stored in memory",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H3",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H4_1": {
+          "bbox": [
+            181,
+            949,
+            224,
+            993
+          ],
+          "g_icon_name": "+/- Button",
+          "g_brief": "Toggle sign - changes positive to negative or vice versa",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H4",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H5_1": {
+          "bbox": [
+            182,
+            519,
+            219,
+            558
+          ],
+          "g_icon_name": "1/x Button",
+          "g_brief": "Reciprocal - calculates 1 divided by the current number",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H5",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H6_1": {
+          "bbox": [
+            184,
+            411,
+            219,
+            451
+          ],
+          "g_icon_name": "% Button",
+          "g_brief": "Percentage - calculates percentage of a number",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H6",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H7_1": {
+          "bbox": [
+            185,
+            844,
+            213,
+            884
+          ],
+          "g_icon_name": "1 Button",
+          "g_brief": "Number 1 - enters digit 1",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H7",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H8_1": {
+          "bbox": [
+            187,
+            625,
+            215,
+            669
+          ],
+          "g_icon_name": "7 Button",
+          "g_brief": "Number 7 - enters digit 7",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H8",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H9_1": {
+          "bbox": [
+            187,
+            737,
+            216,
+            776
+          ],
+          "g_icon_name": "4 Button",
+          "g_brief": "Number 4 - enters digit 4",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H9",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H10_1": {
+          "bbox": [
+            243,
+            328,
+            280,
+            357
+          ],
+          "g_icon_name": "M+ Button",
+          "g_brief": "Memory Add - adds current number to memory",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H10",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H11_1": {
+          "bbox": [
+            344,
+            328,
+            378,
+            357
+          ],
+          "g_icon_name": "M- Button",
+          "g_brief": "Memory Subtract - subtracts current number from memory",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H11",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H12_1": {
+          "bbox": [
+            444,
+            328,
+            480,
+            357
+          ],
+          "g_icon_name": "MS Button",
+          "g_brief": "Memory Store - stores current number in memory",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H12",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H13_1": {
+          "bbox": [
+            561,
+            415,
+            600,
+            450
+          ],
+          "g_icon_name": "CE Button",
+          "g_brief": "Clear Entry - clears the last entered number",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H13",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H14_1": {
+          "bbox": [
+            561,
+            518,
+            598,
+            558
+          ],
+          "g_icon_name": "x² Button",
+          "g_brief": "Square - calculates the square of the current number",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H14",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H15_1": {
+          "bbox": [
+            564,
+            844,
+            593,
+            884
+          ],
+          "g_icon_name": "2 Button",
+          "g_brief": "Number 2 - enters digit 2",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H15",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H16_1": {
+          "bbox": [
+            565,
+            626,
+            593,
+            669
+          ],
+          "g_icon_name": "8 Button",
+          "g_brief": "Number 8 - enters digit 8",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H16",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H17_1": {
+          "bbox": [
+            565,
+            734,
+            593,
+            777
+          ],
+          "g_icon_name": "5 Button",
+          "g_brief": "Number 5 - enters digit 5",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H17",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H18_1": {
+          "bbox": [
+            565,
+            953,
+            593,
+            992
+          ],
+          "g_icon_name": "0 Button",
+          "g_brief": "Number 0 - enters digit 0",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H18",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H19_1": {
+          "bbox": [
+            938,
+            518,
+            978,
+            558
+          ],
+          "g_icon_name": "√x Button",
+          "g_brief": "Square Root - calculates the square root of the current number",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H19",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H20_1": {
+          "bbox": [
+            944,
+            844,
+            974,
+            884
+          ],
+          "g_icon_name": "3 Button",
+          "g_brief": "Number 3 - enters digit 3",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H20",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H21_1": {
+          "bbox": [
+            945,
+            415,
+            974,
+            449
+          ],
+          "g_icon_name": "C Button",
+          "g_brief": "Clear - clears all calculations and resets calculator",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H21",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H22_1": {
+          "bbox": [
+            945,
+            626,
+            972,
+            669
+          ],
+          "g_icon_name": "9 Button",
+          "g_brief": "Number 9 - enters digit 9",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H22",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H23_1": {
+          "bbox": [
+            945,
+            737,
+            974,
+            776
+          ],
+          "g_icon_name": "6 Button",
+          "g_brief": "Number 6 - enters digit 6",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H23",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H24_1": {
+          "bbox": [
+            1319,
+            627,
+            1354,
+            665
+          ],
+          "g_icon_name": "× Button",
+          "g_brief": "Multiplication - multiplies numbers",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H24",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H25_1": {
+          "bbox": [
+            1321,
+            415,
+            1357,
+            447
+          ],
+          "g_icon_name": "Backspace Button",
+          "g_brief": "Backspace - deletes the last entered digit",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H25",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H26_1": {
+          "bbox": [
+            1321,
+            520,
+            1352,
+            555
+          ],
+          "g_icon_name": "÷ Button",
+          "g_brief": "Division - divides numbers",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H26",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H27_1": {
+          "bbox": [
+            1321,
+            845,
+            1352,
+            880
+          ],
+          "g_icon_name": "+ Button",
+          "g_brief": "Addition - adds numbers",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H27",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H28_1": {
+          "bbox": [
+            1321,
+            960,
+            1351,
+            982
+          ],
+          "g_icon_name": "= Button",
+          "g_brief": "Equals - calculates and displays the result",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H28",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H29_1": {
+          "bbox": [
+            1465,
+            177,
+            1511,
+            263
+          ],
+          "g_icon_name": "Display",
+          "g_brief": "Calculator display showing current number or result",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H29",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H30_1": {
+          "bbox": [
+            1529,
+            53,
+            1608,
+            120
+          ],
+          "g_icon_name": "History Button",
+          "g_brief": "Opens calculation history panel",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H30",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H31_1": {
+          "bbox": [
+            1540,
+            129,
+            1715,
+            156
+          ],
+          "g_icon_name": "History Text",
+          "g_brief": "Text message indicating no history available",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H31",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H32_1": {
+          "bbox": [
+            1613,
+            56,
+            1707,
+            98
+          ],
+          "g_icon_name": "Memory Button",
+          "g_brief": "Opens memory panel to view stored values",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H32",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H33_1": {
+          "bbox": [
+            1765,
+            9,
+            1807,
+            51
+          ],
+          "g_icon_name": "Minimize Button",
+          "g_brief": "Minimizes the calculator window",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H33",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H33_2": {
+          "bbox": [
+            1816,
+            9,
+            1862,
+            50
+          ],
+          "g_icon_name": "Maximize Button",
+          "g_brief": "Maximizes or restores the calculator window",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H33",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "H33_3": {
+          "bbox": [
+            1879,
+            9,
+            1922,
+            49
+          ],
+          "g_icon_name": "Close Button",
+          "g_brief": "Closes the calculator application",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H33",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V0_1": {
+          "bbox": [
+            1145,
+            377,
+            1528,
+            487
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V0_2": {
+          "bbox": [
+            1146,
+            484,
+            1526,
+            594
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V0_3": {
+          "bbox": [
+            1146,
+            593,
+            1527,
+            703
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V0_4": {
+          "bbox": [
+            1146,
+            701,
+            1527,
+            811
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V0_5": {
+          "bbox": [
+            1143,
+            809,
+            1526,
+            917
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V0_6": {
+          "bbox": [
+            1143,
+            916,
+            1527,
+            1028
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V1_1": {
+          "bbox": [
+            9,
+            378,
+            392,
+            486
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V1_2": {
+          "bbox": [
+            9,
+            483,
+            391,
+            595
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V1_3": {
+          "bbox": [
+            9,
+            592,
+            391,
+            703
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V1_4": {
+          "bbox": [
+            9,
+            700,
+            392,
+            811
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V1_5": {
+          "bbox": [
+            9,
+            808,
+            393,
+            921
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V1_6": {
+          "bbox": [
+            9,
+            917,
+            394,
+            1032
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V2_1": {
+          "bbox": [
+            766,
+            378,
+            1151,
+            487
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V2",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V2_2": {
+          "bbox": [
+            765,
+            482,
+            1148,
+            595
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V2",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V2_3": {
+          "bbox": [
+            764,
+            592,
+            1149,
+            703
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V2",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V2_4": {
+          "bbox": [
+            765,
+            699,
+            1150,
+            811
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V2",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V2_5": {
+          "bbox": [
+            763,
+            809,
+            1149,
+            919
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V2",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V2_6": {
+          "bbox": [
+            765,
+            917,
+            1151,
+            1031
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V2",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V3_1": {
+          "bbox": [
+            386,
+            380,
+            770,
+            486
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V3",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V3_2": {
+          "bbox": [
+            388,
+            484,
+            770,
+            595
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V3",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V3_3": {
+          "bbox": [
+            386,
+            592,
+            770,
+            703
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V3",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V3_4": {
+          "bbox": [
+            387,
+            700,
+            770,
+            812
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V3",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V3_5": {
+          "bbox": [
+            386,
+            809,
+            770,
+            919
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V3",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "V3_6": {
+          "bbox": [
+            387,
+            917,
+            772,
+            1031
+          ],
+          "g_icon_name": "Vertical Separator",
+          "g_brief": "Structural UI separator element",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V3",
+          "status": "pending",
+          "autocaptioning": "done"
+        },
+        "HL0_1": {
+          "bbox": [
+            79,
+            156,
+            1032,
+            314
+          ],
+          "g_icon_name": "Hamburger Menu",
+          "g_brief": "Opens the main menu with application options",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "HL0",
+          "status": "pending",
+          "autocaptioning": "done"
+        }
+      }
+    },
+    "root_unknown": {
+      "id": "root_unknown",
+      "parent": "root",
+      "trigger_node": "root::V2_2",
+      "trigger_element": "Unknown",
+      "breadcrumb": "root>unknown",
+      "image": "D:\\Himanshu\\EAG-V2\\eag-v2-s13\\apps\\calc\\screenshots\\diffs\\root_to_processing_via_root__V2_2.png",
+      "creation_timestamp": "2025-12-18T18:11:12.326143",
+      "analysis_time": 0.20845651626586914,
+      "total_elements": 6,
+      "nodes": {
+        "H0_1": {
+          "bbox": [
+            1465,
+            138,
+            1480,
+            156
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H0",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\Unknown\\H0_1_None_Unknown_root_unknown.png",
+          "autocaptioning": "done"
+        },
+        "H0_2": {
+          "bbox": [
+            1477,
+            146,
+            1488,
+            158
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H0",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\Unknown\\H0_2_None_Unknown_root_unknown.png",
+          "autocaptioning": "done"
+        },
+        "H1_1": {
+          "bbox": [
+            1471,
+            133,
+            1482,
+            145
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\Unknown\\H1_1_None_Unknown_root_unknown.png",
+          "autocaptioning": "done"
+        },
+        "H1_2": {
+          "bbox": [
+            1485,
+            134,
+            1500,
+            152
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\Unknown\\H1_2_None_Unknown_root_unknown.png",
+          "autocaptioning": "done"
+        },
+        "H2_1": {
+          "bbox": [
+            1476,
+            133,
+            1488,
+            145
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H2",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\Unknown\\H2_1_None_Unknown_root_unknown.png",
+          "autocaptioning": "done"
+        },
+        "H2_2": {
+          "bbox": [
+            1496,
+            133,
+            1509,
+            147
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H2",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\Unknown\\H2_2_None_Unknown_root_unknown.png",
+          "autocaptioning": "done"
+        }
+      },
+      "exit_strategies": {
+        "root": {
+          "method": "click_coordinates",
+          "coordinates": [
+            75,
+            35
+          ],
+          "learned_from": "automatic_discovery",
+          "success_rate": 1.0,
+          "last_used": 1766061698.5804844,
+          "discovery_method": "safe_area_click"
+        }
+      }
+    },
+    "root_9_button": {
+      "id": "root_9_button",
+      "parent": "root",
+      "trigger_node": "root::H22_1",
+      "trigger_element": "9 Button",
+      "breadcrumb": "root>9>button",
+      "image": "D:\\Himanshu\\EAG-V2\\eag-v2-s13\\apps\\calc\\screenshots\\diffs\\root_to_processing_via_root__H22_1.png",
+      "creation_timestamp": "2025-12-18T18:26:21.552382",
+      "analysis_time": 0.9575254917144775,
+      "total_elements": 11,
+      "nodes": {
+        "H0_1": {
+          "bbox": [
+            1463,
+            186,
+            1513,
+            258
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H0",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\H0_1_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "H1_1": {
+          "bbox": [
+            1466,
+            134,
+            1509,
+            156
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\H1_1_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "H2_1": {
+          "bbox": [
+            1881,
+            981,
+            1913,
+            1014
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H2",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\H2_1_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V0_1": {
+          "bbox": [
+            1858,
+            128,
+            1912,
+            153
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V0_1_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V0_2": {
+          "bbox": [
+            1877,
+            155,
+            1912,
+            196
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V0",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V0_2_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V1_1": {
+          "bbox": [
+            1463,
+            376,
+            1528,
+            486
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V1_1_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V1_2": {
+          "bbox": [
+            1463,
+            483,
+            1526,
+            593
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V1_2_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V1_3": {
+          "bbox": [
+            1463,
+            592,
+            1526,
+            702
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V1_3_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V1_4": {
+          "bbox": [
+            1463,
+            701,
+            1526,
+            810
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V1_4_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V1_5": {
+          "bbox": [
+            1463,
+            808,
+            1526,
+            918
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V1_5_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        },
+        "V1_6": {
+          "bbox": [
+            1463,
+            915,
+            1527,
+            1014
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "V1",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\9_Button\\V1_6_None_Unknown_root_9_button.png",
+          "autocaptioning": "done"
+        }
+      },
+      "exit_strategies": {
+        "root": {
+          "method": "click_coordinates",
+          "coordinates": [
+            75,
+            35
+          ],
+          "learned_from": "automatic_discovery",
+          "success_rate": 1.0,
+          "last_used": 1766062625.3005779,
+          "discovery_method": "safe_area_click"
+        }
+      }
+    },
+    "root_x²_button": {
+      "id": "root_x²_button",
+      "parent": "root",
+      "trigger_node": "root::H14_1",
+      "trigger_element": "x² Button",
+      "breadcrumb": "root>x²>button",
+      "image": "D:\\Himanshu\\EAG-V2\\eag-v2-s13\\apps\\calc\\screenshots\\diffs\\root_to_processing_via_root__H14_1.png",
+      "creation_timestamp": "2025-12-18T18:29:58.749281",
+      "analysis_time": 0.19999957084655762,
+      "total_elements": 1,
+      "nodes": {
+        "H0_1": {
+          "bbox": [
+            1451,
+            134,
+            1515,
+            257
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H0",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\x²_Button\\H0_1_None_Unknown_root_x²_button.png",
+          "autocaptioning": "done"
+        }
+      },
+      "exit_strategies": {
+        "root": {
+          "method": "click_coordinates",
+          "coordinates": [
+            75,
+            35
+          ],
+          "learned_from": "automatic_discovery",
+          "success_rate": 1.0,
+          "last_used": 1766062807.7137263,
+          "discovery_method": "safe_area_click"
+        }
+      }
+    },
+    "root_2_button": {
+      "id": "root_2_button",
+      "parent": "root",
+      "trigger_node": "root::H15_1",
+      "trigger_element": "2 Button",
+      "breadcrumb": "root>2>button",
+      "image": "D:\\Himanshu\\EAG-V2\\eag-v2-s13\\apps\\calc\\screenshots\\diffs\\root_to_processing_via_root__H15_1.png",
+      "creation_timestamp": "2025-12-18T18:29:29.383482",
+      "analysis_time": 0.6148912906646729,
+      "total_elements": 1,
+      "nodes": {
+        "H0_1": {
+          "bbox": [
+            1468,
+            175,
+            1511,
+            266
+          ],
+          "g_icon_name": "Unknown",
+          "g_brief": "No description",
+          "g_enabled": true,
+          "g_interactive": true,
+          "g_type": "icon",
+          "explore": true,
+          "m_id": null,
+          "y_id": null,
+          "o_id": null,
+          "type": "icon",
+          "source": "unknown",
+          "group": "H0",
+          "interactivity": {
+            "click_result": null,
+            "type": "unknown"
+          },
+          "status": "pending",
+          "crop_path": "crops\\2_Button\\H0_1_None_Unknown_root_2_button.png",
+          "autocaptioning": "done"
+        }
+      },
+      "exit_strategies": {
+        "root": {
+          "method": "click_coordinates",
+          "coordinates": [
+            75,
+            35
+          ],
+          "learned_from": "automatic_discovery",
+          "success_rate": 1.0,
+          "last_used": 1766062778.3961327,
+          "discovery_method": "safe_area_click"
+        }
+      }
+    }
+  },
+  "edges": [
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H0_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:32:03.065506"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H0_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:34:19.931968"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H4_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:39:02.001620"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H5_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:39:26.536592"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H6_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:40:33.736645"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H7_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:40:53.277800"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H8_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:41:44.851750"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H9_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:42:24.977513"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H10_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:42:44.155674"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H11_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:43:04.162347"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H13_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:43:44.132464"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H14_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:44:03.485604"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H15_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:44:33.129279"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H16_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:45:02.824029"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H17_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:45:25.657332"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H18_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:45:44.938409"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H19_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:46:14.665634"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H20_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:46:34.040147"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H21_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:47:04.241727"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H22_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:47:19.207156"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H23_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:47:34.184660"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H24_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:47:56.984973"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H28_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:49:32.470409"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H29_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:50:47.847540"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H32_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:51:48.442282"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H33_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:52:22.723805"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H33_2",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T17:57:52.378630"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:H33_3",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:05:14.846913"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V0_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:05:37.932034"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V0_2",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:05:52.823552"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V0_4",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:06:32.742726"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V0_5",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:06:47.832968"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V0_6",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:07:07.800600"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V1_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:07:55.888658"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V1_2",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:08:36.956641"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V1_3",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:09:44.058899"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V1_4",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:09:59.042801"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V1_5",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:10:18.549712"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V1_6",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:10:37.980734"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V2_1",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:10:52.908206"
+    },
+    {
+      "from": "root",
+      "to": "root_unknown",
+      "action": "click:V2_2",
+      "element_name": "Unknown",
+      "navigation": "root → root_unknown",
+      "timestamp": "2025-12-18T18:11:12.327144"
+    },
+    {
+      "from": "root",
+      "to": "root_9_button",
+      "action": "click:H22_1",
+      "element_name": "9 Button",
+      "navigation": "root → root_9_button",
+      "timestamp": "2025-12-18T18:26:21.553400"
+    },
+    {
+      "from": "root",
+      "to": "root_x²_button",
+      "action": "click:H14_1",
+      "element_name": "x² Button",
+      "navigation": "root → root_x²_button",
+      "timestamp": "2025-12-18T18:28:12.942311"
+    },
+    {
+      "from": "root",
+      "to": "root_2_button",
+      "action": "click:H15_1",
+      "element_name": "2 Button",
+      "navigation": "root → root_2_button",
+      "timestamp": "2025-12-18T18:29:29.383482"
+    },
+    {
+      "from": "root",
+      "to": "root_x²_button",
+      "action": "click:H14_1",
+      "element_name": "x² Button",
+      "navigation": "root → root_x²_button",
+      "timestamp": "2025-12-18T18:29:58.749281"
+    }
+  ],
+  "last_updated": "2025-12-18T18:30:07.713726",
+  "total_states": 5,
+  "exploration_stats": {
+    "pending_nodes": 80,
+    "explored_nodes": 0,
+    "non_interactive_nodes": 0,
+    "total_nodes": 80
+  }
+}
