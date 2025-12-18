@@ -49,7 +49,7 @@ class SeraphineIntegrator:
         
         # Call Seraphine
         self.console.print(f"[cyan]🔍 Analyzing screenshot: {screenshot_path}[/cyan]")
-        self.console.print(f"[yellow]📋 Note: Groq LLM analysis should be enabled in utils/seraphine_pipeline/config.json[/yellow]")
+        self.console.print(f"[yellow]📋 Note: Groq LLM analysis is enabled (free tier, no rate limits)[/yellow]")
         
         seraphine_result = process_image_sync(screenshot_path)  # ✅ FIXED: Use imported function directly
         

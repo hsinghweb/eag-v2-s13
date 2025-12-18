@@ -4,17 +4,30 @@ Handles integration of Gemini LLM results into seraphine structure
 """
 from .helpers import debug_print
 
-def integrate_llm_results(seraphine_analysis, llm_results):
+def integrate_llm_results(seraphine_analysis, llm_results, llm_provider="gemini"):
     """
     Integrate LLM (Groq or Gemini) results into seraphine structure at individual bbox level
+    
+    Args:
+        seraphine_analysis: The seraphine analysis structure
+        llm_results: Results from LLM analysis
+        llm_provider: "groq" or "gemini" (default: "gemini")
     """
     if not llm_results or not llm_results.get('images'):
         debug_print("⚠️  No LLM results to integrate")
         return seraphine_analysis
     
+    # Determine provider emoji and name
+    if llm_provider.lower() == "groq":
+        provider_emoji = "🚀 [GROQ]"
+        provider_name = "Groq"
+    else:
+        provider_emoji = "🤖 [GEMINI]"
+        provider_name = "Gemini"
+    
     # ✅ ALWAYS PRINT - Show integration start
-    print("\n🚀 [GROQ] ===== INTEGRATING GROQ LLM RESULTS =====")
-    print("🚀 [GROQ] Mapping Groq icon names to seraphine groups...")
+    print(f"\n{provider_emoji} ===== INTEGRATING {provider_name.upper()} LLM RESULTS =====")
+    print(f"{provider_emoji} Mapping {provider_name} icon names to seraphine groups...")
     
     debug_print("\n🔗 Integrating LLM results into seraphine structure...")
     
@@ -35,9 +48,9 @@ def integrate_llm_results(seraphine_analysis, llm_results):
                     }
                     # Show first few mappings
                     if len(id_to_llm) <= 5:
-                        print(f"🚀 [GROQ]   Mapping: {icon_id} → '{icon.get('name', 'unknown')}'")
+                        print(f"{provider_emoji}   Mapping: {icon_id} → '{icon.get('name', 'unknown')}'")
     
-    print(f"🚀 [GROQ] ✅ Created {len(id_to_llm)} icon name mappings from Groq")
+    print(f"{provider_emoji} ✅ Created {len(id_to_llm)} icon name mappings from {provider_name}")
     debug_print(f"   📋 Found {len(id_to_llm)} LLM mappings to integrate")
     
     # Integrate results into seraphine bbox_processor
@@ -64,15 +77,15 @@ def integrate_llm_results(seraphine_analysis, llm_results):
             else:
                 # Default values if no LLM result available
                 bbox.g_icon_name = 'unanalyzed'
-                bbox.g_brief = 'Not analyzed by Groq LLM'
+                bbox.g_brief = f'Not analyzed by {provider_name} LLM'
     
     total_elements = sum(len(boxes) for boxes in bbox_processor.final_groups.values())
-    print(f"🚀 [GROQ] ✅ Integrated: {total_integrated}/{total_elements} elements updated with Groq names")
+    print(f"{provider_emoji} ✅ Integrated: {total_integrated}/{total_elements} elements updated with {provider_name} names")
     if total_integrated < total_elements:
-        print(f"🚀 [GROQ] ⚠️  {total_elements - total_integrated} elements did NOT get Groq names (will show 'unanalyzed')")
-        print(f"🚀 [GROQ]    This may indicate ID mismatch between Groq results and seraphine groups")
+        print(f"{provider_emoji} ⚠️  {total_elements - total_integrated} elements did NOT get {provider_name} names (will show 'unanalyzed')")
+        print(f"{provider_emoji}    This may indicate ID mismatch between {provider_name} results and seraphine groups")
     
-    debug_print(f"✅ Integrated Groq results: {total_integrated}/{total_elements} items updated")
+    debug_print(f"✅ Integrated {provider_name} results: {total_integrated}/{total_elements} items updated")
     
     # 🎯 REGENERATE SERAPHINE_LLM_GROUPS WITH UPDATED DATA
     # Keep using 'seraphine_gemini_groups' key for backward compatibility
@@ -81,7 +94,7 @@ def integrate_llm_results(seraphine_analysis, llm_results):
     # Get the merged_detections from analysis for proper ID lookup
     merged_detections = seraphine_analysis.get('original_merged_detections', [])
     
-    # Create the enhanced structure with integrated Groq data
+    # Create the enhanced structure with integrated LLM data
     seraphine_llm_groups = create_enhanced_seraphine_structure(
         seraphine_analysis, 
         merged_detections
@@ -90,8 +103,8 @@ def integrate_llm_results(seraphine_analysis, llm_results):
     # Add it to the analysis (keep key name for backward compatibility)
     seraphine_analysis['seraphine_gemini_groups'] = seraphine_llm_groups
     
-    print(f"🚀 [GROQ] 🎯 Generated seraphine_gemini_groups with {len(seraphine_llm_groups)} groups (Groq data)")
-    print("🚀 [GROQ] ===== INTEGRATION COMPLETE =====\n")
+    print(f"{provider_emoji} 🎯 Generated seraphine_gemini_groups with {len(seraphine_llm_groups)} groups ({provider_name} data)")
+    print(f"{provider_emoji} ===== INTEGRATION COMPLETE =====\n")
     
     debug_print(f"🎯 Generated seraphine_gemini_groups with {len(seraphine_llm_groups)} groups")
     
@@ -107,9 +120,9 @@ async def run_llm_analysis(seraphine_analysis, grouped_image_paths, image_path, 
     """
     Run LLM analysis with optimized image sharing - supports both Gemini and Groq
     """
-    # Determine which LLM to use
+    # Determine which LLM to use - prioritize Groq
     llm_provider = config.get("llm_provider", "groq").lower()  # Default to Groq
-    groq_enabled = config.get("groq_enabled", True)  # Default to enabled
+    groq_enabled = config.get("groq_enabled", True)  # Default to Groq enabled
     gemini_enabled = config.get("gemini_enabled", False)
     
     # Auto-detect: if Groq is enabled, use it; otherwise try Gemini

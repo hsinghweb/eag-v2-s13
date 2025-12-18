@@ -587,7 +587,14 @@ async def main(image_path=None):
             gemini_enabled = config.get("gemini_enabled", False)
             
             if groq_enabled or gemini_enabled:
-                provider = "Groq" if groq_enabled else "Gemini"
+                # Determine provider: prefer Groq if enabled, otherwise use Gemini
+                if groq_enabled:
+                    provider = "Groq"
+                    provider_lower = "groq"
+                else:
+                    provider = "Gemini"
+                    provider_lower = "gemini"
+                    
                 print(f"\n🤖 [LLM] {provider} is ENABLED in config - proceeding with analysis...")
                 try:
                     from seraphine_pipeline.gemini_integration import run_llm_analysis, integrate_llm_results
@@ -599,7 +606,8 @@ async def main(image_path=None):
                         print(f"🤖 [LLM] ✅ {provider} results received, integrating into seraphine structure...")
                         # Store original merged detections for proper ID lookup
                         seraphine_analysis['original_merged_detections'] = detection_results['merged_detections']
-                        seraphine_analysis = integrate_llm_results(seraphine_analysis, llm_results)
+                        # Pass the provider name so integration messages are correct
+                        seraphine_analysis = integrate_llm_results(seraphine_analysis, llm_results, llm_provider=provider_lower)
                     else:
                         print(f"🤖 [LLM] ⚠️  {provider} analysis returned no results!")
                         

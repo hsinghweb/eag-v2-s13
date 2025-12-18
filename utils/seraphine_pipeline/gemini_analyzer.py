@@ -14,10 +14,11 @@ from .helpers import debug_print
 
 try:
     from google import genai
-    from google.genai.errors import ServerError
+    from google.genai.errors import ServerError, ClientError
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
+    ClientError = None
     debug_print("⚠️  Warning: google-genai not installed. Gemini analysis will be skipped.")
 
 try:
@@ -312,6 +313,25 @@ class GeminiIconAnalyzer:
                 
                 return response_text
                 
+            except ClientError as e:
+                # Handle API key errors specifically
+                error_str = str(e)
+                if "API key expired" in error_str or "API_KEY_INVALID" in error_str or "API key" in error_str.lower():
+                    print(f"\n🤖 [GEMINI] ❌ CRITICAL ERROR: Gemini API Key Issue!")
+                    print(f"🤖 [GEMINI]    Error: API key expired or invalid")
+                    print(f"🤖 [GEMINI]")
+                    print(f"🤖 [GEMINI] 📋 To fix this:")
+                    print(f"🤖 [GEMINI]    1. Get a new API key from: https://aistudio.google.com/app/apikey")
+                    print(f"🤖 [GEMINI]    2. Set it in PowerShell: $env:GEMINI_API_KEY = 'your-new-key'")
+                    print(f"🤖 [GEMINI]    3. Or add to .env file: GEMINI_API_KEY=your-new-key")
+                    print(f"🤖 [GEMINI]    4. Restart your terminal/PowerShell session")
+                    print(f"🤖 [GEMINI]")
+                    return None  # Don't retry for API key errors
+                else:
+                    # Other client errors (400, etc.)
+                    print(f"🤖 [GEMINI] ❌ Client error from Gemini API: {e}")
+                    debug_print(f"    ⚠️  Client error: {e}")
+                    return None
             except ServerError as e:
                 error_str = str(e)
                 # Check if it's a 429 rate limit error
