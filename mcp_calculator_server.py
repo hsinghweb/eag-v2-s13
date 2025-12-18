@@ -57,43 +57,112 @@ class CalculatorController:
         
         # Normalize name for matching
         name_lower = name.lower().strip()
+        name_original = name.strip()
         
+        # Direct mapping for common buttons (check these first for exact matches)
+        button_mappings = {
+            "+": ["+ button", "addition"],
+            "=": ["= button", "equals"],
+            "-": ["- button", "minus", "subtract"],
+            "×": ["× button", "multiplication"],
+            "*": ["× button", "multiplication"],
+            "÷": ["÷ button", "division"],
+            "/": ["÷ button", "division"],
+            "square": ["x² button", "square"],
+            "√": ["√x button", "square root"],
+        }
+        
+        # First pass: Check for exact matches using button_mappings
+        if name_lower in button_mappings:
+            patterns = button_mappings[name_lower]
+            # For operators, prioritize exact matches
+            if name_lower == "+":
+                # Look for exact "+ Button" (not "M+ Button" or "+/- Button")
+                for node_id, node_data in nodes.items():
+                    icon_name = node_data.get("g_icon_name", "").lower()
+                    brief = node_data.get("g_brief", "").lower()
+                    # Check for exact "+ button" match - must start with "+" and not be "M+" or "+/-"
+                    if icon_name == "+ button" or ("addition" in brief and "+" in icon_name and not icon_name.startswith("m") and "+/-" not in icon_name):
+                        print(f"✅ Found {name} → {node_id} ({node_data.get('g_icon_name', '')})")
+                        return node_id
+            else:
+                # For other buttons, use pattern matching
+                for node_id, node_data in nodes.items():
+                    icon_name = node_data.get("g_icon_name", "").lower()
+                    brief = node_data.get("g_brief", "").lower()
+                    for pattern in patterns:
+                        if pattern in icon_name or pattern in brief:
+                            print(f"✅ Found {name} → {node_id} ({node_data.get('g_icon_name', '')})")
+                            return node_id
+        
+        # Second pass: Check for digit buttons
+        if name_lower.isdigit():
+            for node_id, node_data in nodes.items():
+                icon_name = node_data.get("g_icon_name", "").lower()
+                if f"{name_lower} button" in icon_name:
+                    print(f"✅ Found {name} → {node_id} ({node_data.get('g_icon_name', '')})")
+                    return node_id
+        
+        # Third pass: Fallback for other buttons
         for node_id, node_data in nodes.items():
             icon_name = node_data.get("g_icon_name", "").lower()
             brief = node_data.get("g_brief", "").lower()
             
-            # Match by exact button name
-            if name_lower in icon_name or name_lower in brief:
-                # Check for specific patterns
-                if name_lower == "2" and "2 button" in icon_name:
+            # Check if name appears in icon_name or brief
+            if name_original in icon_name or name_lower in icon_name or name_lower in brief:
+                # Additional validation for operators
+                if name_lower == "+" and ("+" in icon_name or "addition" in brief):
+                    print(f"✅ Found {name} → {node_id} ({node_data.get('g_icon_name', '')})")
                     return node_id
-                elif name_lower == "3" and "3 button" in icon_name:
+                elif name_lower == "=" and ("=" in icon_name or "equals" in brief):
+                    print(f"✅ Found {name} → {node_id} ({node_data.get('g_icon_name', '')})")
                     return node_id
-                elif name_lower == "+" and ("+ button" in icon_name or "addition" in brief):
+                elif name_lower == "square" and ("square" in icon_name or "x²" in icon_name):
+                    print(f"✅ Found {name} → {node_id} ({node_data.get('g_icon_name', '')})")
                     return node_id
-                elif name_lower == "=" and ("= button" in icon_name or "equals" in brief):
-                    return node_id
-                elif name_lower == "square" and ("x²" in icon_name or "square" in brief):
-                    return node_id
-                elif name_lower in ["×", "*", "multiply"] and ("×" in icon_name or "multiplication" in brief):
-                    return node_id
-                elif name_lower in ["÷", "/", "divide"] and ("÷" in icon_name or "division" in brief):
-                    return node_id
-                elif name_lower == "-" and ("-" in icon_name or "minus" in brief or "subtract" in brief):
-                    return node_id
-                elif name_lower.isdigit() and f"{name_lower} button" in icon_name:
-                    return node_id
+        
+        print(f"❌ Button '{name}' not found in fdom.json")
+        # Debug: Show available buttons
+        print("Available buttons:")
+        for node_id, node_data in list(nodes.items())[:10]:  # Show first 10
+            print(f"  {node_id}: {node_data.get('g_icon_name', 'Unknown')}")
+        return None
+    
+    def _find_calculator_window(self) -> Optional[str]:
+        """Find Calculator window with more specific matching"""
+        self.gui_api.refresh()
+        windows = self.gui_api.get_windows()
+        
+        # Look for Calculator window specifically
+        calculator_patterns = ["calculator", "calc"]
+        
+        for window_id, window_info in windows.items():
+            title = window_info.get('window_data', {}).get('title', '').lower()
+            # Exclude Cursor and other IDEs
+            if any(exclude in title for exclude in ["cursor", "code", "visual studio", "pycharm", "intellij"]):
+                continue
+            
+            # Check if it matches calculator patterns
+            for pattern in calculator_patterns:
+                if pattern in title:
+                    # Verify it's actually Calculator by checking if title is exactly "Calculator" or starts with it
+                    if title == "calculator" or title.startswith("calculator"):
+                        print(f"✅ Found Calculator window: {window_id} - '{window_info.get('window_data', {}).get('title', '')}'")
+                        return window_id
         
         return None
     
     def open_calculator(self) -> Dict[str, Any]:
         """Open Windows Calculator"""
         try:
-            # Check if calculator is already open
-            window_id = self.gui_api.find_window("calculator")
+            # Check if calculator is already open - use more specific search
+            window_id = self._find_calculator_window()
             if window_id:
                 print("✅ Calculator already open")
                 self.window_id = window_id
+                # Force focus and update position
+                self.gui_api.focus_window(self.window_id)
+                time.sleep(0.5)
                 self._update_window_position()
                 return {"success": True, "message": "Calculator already open", "window_id": window_id}
             
@@ -115,7 +184,23 @@ class CalculatorController:
             if result.get("success"):
                 self.window_id = result["app_info"]["window_id"]
                 time.sleep(2)  # Wait for window to stabilize
+                
+                # Re-find window to ensure we have the correct one
+                window_id = self._find_calculator_window()
+                if window_id:
+                    self.window_id = window_id
+                
+                # Force focus before updating position
+                self.gui_api.focus_window(self.window_id)
+                time.sleep(0.5)
                 self._update_window_position()
+                
+                # Verify we have the right window
+                window_info = self.gui_api.get_window_info(self.window_id)
+                if window_info:
+                    title = window_info.get('window_data', {}).get('title', '')
+                    print(f"✅ Calculator window confirmed: '{title}'")
+                
                 return {"success": True, "message": "Calculator opened", "window_id": self.window_id}
             else:
                 return {"success": False, "error": result.get("error", "Unknown error")}
@@ -128,15 +213,25 @@ class CalculatorController:
         if not self.window_id:
             return
         
+        # Refresh window list to get latest positions
+        self.gui_api.refresh()
+        
         window_info = self.gui_api.get_window_info(self.window_id)
         if window_info:
             pos = window_info['window_data']['position']
             self.window_pos = {'left': pos['x'], 'top': pos['y']}
+            title = window_info.get('window_data', {}).get('title', '')
+            print(f"📍 Window position updated: '{title}' at ({pos['x']}, {pos['y']})")
         else:
-            # Fallback: try to find window again
-            self.window_id = self.gui_api.find_window("calculator")
+            # Fallback: try to find window again with specific search
+            print("⚠️ Window info not found, re-searching for Calculator...")
+            self.window_id = self._find_calculator_window()
             if self.window_id:
+                self.gui_api.focus_window(self.window_id)
+                time.sleep(0.3)
                 self._update_window_position()
+            else:
+                print("❌ Could not find Calculator window")
     
     def click_button(self, button_name: str) -> Dict[str, Any]:
         """Click a calculator button by name"""
@@ -147,9 +242,10 @@ class CalculatorController:
                     return result
             
             # Find node ID for the button
+            print(f"🔍 Looking for button: '{button_name}'")
             node_id = self._find_node_by_name(button_name)
             if not node_id:
-                return {"success": False, "error": f"Button '{button_name}' not found"}
+                return {"success": False, "error": f"Button '{button_name}' not found in fdom.json"}
             
             # Get node data from fdom
             state = self.fdom_data.get("states", {}).get("root", {})
@@ -175,12 +271,32 @@ class CalculatorController:
             abs_x = self.window_pos['left'] + center_x
             abs_y = self.window_pos['top'] + center_y
             
-            # Focus window first
+            # CRITICAL: Ensure Calculator window is focused before clicking
+            print(f"🎯 Focusing Calculator window: {self.window_id}")
             self.gui_api.focus_window(self.window_id)
-            time.sleep(0.2)
+            time.sleep(0.5)  # Give time for focus to take effect
+            
+            # Verify window is still correct
+            window_info = self.gui_api.get_window_info(self.window_id)
+            if window_info:
+                title = window_info.get('window_data', {}).get('title', '')
+                if 'calculator' not in title.lower() or 'cursor' in title.lower():
+                    print(f"⚠️ Warning: Window title is '{title}', might not be Calculator!")
+                    # Try to re-find Calculator window
+                    calc_window = self._find_calculator_window()
+                    if calc_window and calc_window != self.window_id:
+                        print(f"🔄 Switching to correct Calculator window: {calc_window}")
+                        self.window_id = calc_window
+                        self.gui_api.focus_window(self.window_id)
+                        time.sleep(0.5)
+                        self._update_window_position()
+                        # Recalculate coordinates with new window position
+                        abs_x = self.window_pos['left'] + center_x
+                        abs_y = self.window_pos['top'] + center_y
             
             # Click the button
             print(f"🖱️ Clicking {button_name} ({node_id}) at ({abs_x}, {abs_y})")
+            print(f"   Window: {self.window_id}, Window pos: {self.window_pos}")
             success = self.gui_api.click(abs_x, abs_y)
             
             if success:
@@ -228,6 +344,14 @@ class CalculatorInstructionParser:
             
             # Parse first part recursively
             first_buttons = self._parse_single_operation(first_part)
+            
+            # IMPORTANT: Ensure first part ends with "=" if it's an operation
+            # This ensures we get the result before applying the second operation
+            if first_buttons and first_buttons[-1] != "=":
+                # Check if first part contains an operation (not just a number)
+                if any(op in first_buttons for op in ["+", "-", "×", "÷"]):
+                    first_buttons.append("=")
+            
             buttons.extend(first_buttons)
             
             # Parse second part (operates on result)
@@ -245,6 +369,10 @@ class CalculatorInstructionParser:
         else:
             # Single operation
             buttons = self._parse_single_operation(instruction)
+            # Ensure single operations also end with "=" if they contain an operator
+            if buttons and buttons[-1] != "=":
+                if any(op in buttons for op in ["+", "-", "×", "÷"]):
+                    buttons.append("=")
         
         return buttons
     

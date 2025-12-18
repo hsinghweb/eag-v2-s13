@@ -31,6 +31,26 @@ def main():
     buttons = parser.parse(instruction)
     print(f"🔢 Parsed button sequence: {' → '.join(buttons)}")
     
+    # Safety check: Ensure "=" is clicked before square/root operations
+    # This ensures we get the result first
+    if "square" in buttons or "√" in buttons:
+        # Find the index of square/root
+        square_idx = None
+        for i, btn in enumerate(buttons):
+            if btn in ["square", "√"]:
+                square_idx = i
+                break
+        
+        if square_idx is not None and square_idx > 0:
+            # Check if "=" is before square/root
+            if buttons[square_idx - 1] != "=":
+                # Check if there's an operation before square
+                has_operation = any(op in buttons[:square_idx] for op in ["+", "-", "×", "÷"])
+                if has_operation:
+                    print(f"⚠️  Adding '=' before square operation to get result first")
+                    buttons.insert(square_idx, "=")
+                    print(f"🔢 Updated sequence: {' → '.join(buttons)}")
+    
     # Execute sequence
     print("\n🖱️ Executing clicks...")
     for i, button in enumerate(buttons, 1):
